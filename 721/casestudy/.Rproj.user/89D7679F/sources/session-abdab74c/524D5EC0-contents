@@ -1,0 +1,88 @@
+library(renv)
+renv::init()         # 启动包管理
+library(tidyverse)
+library(here)
+
+pats   <- read_csv(here("dem.csv"))
+cta    <- read_csv(here("cta.csv"))
+echo   <- read_csv(here("echo.csv"))
+endpts <- read_csv(here("endpts.csv"))
+
+glimpse(pats)
+glimpse(cta)
+glimpse(echo)
+glimpse(endpts)
+
+#cta
+library(dplyr)
+library(stringr)
+library(forcats)
+# 看看原始列类型和示例
+glimpse(cta$cac_category)
+
+# 数一数都有哪些原始取值（前 50 个，以防太多）
+cta %>% count(cac_category, sort = TRUE) %>% head(50)
+
+# 如果显示很乱，再把不可见字符也打印出来（显示每个字符的码位）
+cta %>%
+  mutate(show = stringi::stri_escape_unicode(cac_category)) %>%
+  count(show, sort = TRUE) %>% head(50)
+# 定义正确顺序
+levels_cac <- c("0-99", "100-399", "≥400")
+
+cta_clean <- cta %>%
+  mutate(
+    # 统一空格、去掉奇怪字符
+    cac_category = str_squish(cac_category),
+    
+    # 修正编码错误的 "≥400"（常见的乱码）
+    cac_category = str_replace_all(cac_category, "‚â•400", "≥400"),
+    cac_category = str_replace_all(cac_category, ">=","≥"),  # 如果写成 >=400 也修正
+    cac_category = str_replace_all(cac_category, ">=\\s*400","≥400"),
+    
+    # 设定有序因子（None < Mild < Moderate < Severe）
+    cac_category = factor(cac_category,
+                          levels = levels_cac,
+                          ordered = TRUE)
+  )
+
+# 检查清洗结果
+count(cta_clean, cac_category, sort = TRUE)
+# 看看是否还有未匹配的类别（应只有三类，不应有 NA，除非数据本身缺失）
+count(cta_clean, cac_category, sort = TRUE)
+cta_summary <- cta_clean %>%
+  group_by(patid) %>%
+  summarise(
+    max_cac_idx = suppressWarnings(max(as.integer(cac_category), na.rm = TRUE)),
+    n_cta       = n(),
+    .groups     = "drop"
+  ) %>%
+  mutate(
+    max_cac_idx = ifelse(is.infinite(max_cac_idx), NA_integer_, max_cac_idx),
+    max_cac     = factor(levels_cac[max_cac_idx], levels = levels_cac, ordered = TRUE)
+  ) %>%
+  select(patid, max_cac, n_cta)
+#echo
+echo_summary <- echo %>%
+  group_by(patid) %>%
+  summarise(
+    echo_positive = max(ocad_positive, na.rm = TRUE),
+    n_echo = n(),
+    .groups = "drop"
+  )
+
+analytic <- pats %>%
+  left_join(cta_summary,  by = "patid") %>%
+  left_join(echo_summary, by = "patid") %>%
+  left_join(endpts,       by = "patid")
+
+summary(analytic)
+any(duplicated(analytic$patid))  # FALSE → OK
+
+analytic <- analytic %>%
+  mutate(
+    max_cac = fct_explicit_na(max_cac, na_level = "None"),  # 因子型
+    echo_positive = replace_na(echo_positive, 0)
+  )
+
+write_csv(analytic, here("analytic_dataset.csv"))

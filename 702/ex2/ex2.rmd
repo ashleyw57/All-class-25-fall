@@ -1,0 +1,104 @@
+---
+title: "ANSWER for EX2."
+author: "Jiaqi Wang"
+date: "2025-09-18"
+output: html_document
+---
+## Q1
+
+```{r q1}
+#Parameters
+mu = 67
+sd = 3.5
+n = 100
+
+set.seed(10935)
+#Simulate B samples, each of size n, from N(mu, sd^2)
+height_samples = sapply(1:100, function(x)
+  rnorm(n, mu, sd))
+```
+
+## Q2
+
+```{r q2}
+#Sample means across the B samples
+sample_mean <- colMeans(height_samples)
+
+hist(sample_mean, main = "Sampling Distribution of the Mean (n=100)",
+     xlab = "Sample Mean")
+mean(sample_mean)
+sd(sample_mean)
+sample_sd <- apply(height_samples,
+                   2, sd)
+sample_sd
+```
+
+2.1 Approximately normal, centered near 67, with a tight spread.
+
+2.2 Empirically ≈ 67. Theoretically expected = 67.
+
+2.3 Empirically ≈ 0.35; theoretical SD = 0.35
+
+## Q3
+
+```{r q3}
+sample_se <- apply(height_samples, 
+                   2, function(x) sd(x)/sqrt(n))
+sample_se
+t_crit   <- qt(0.975, df = n - 1)
+lower_ci <- sample_mean - t_crit*sample_se
+upper_ci <- sample_mean + t_crit*sample_se
+covered <- (lower_ci <= mu) & (upper_ci >= mu)
+coverage_percent <- mean(covered) * 100
+coverage_percent
+```
+3.2 The observed coverage should be close to 97% (with Monte Carlo fluctuation around it). Expected = 95%.
+
+## Q4
+```{r q4}
+#parameters
+mu <- 67
+sd <- 3.5
+n <- 50
+
+set.seed(10345)
+heights_sample <- sapply(1:100, function(x) rnorm(n, mu, sd) )
+
+
+#caculate the mean
+samples_mean <- colMeans(heights_sample)
+hist(samples_mean, main = "Sample distribution of the Mean (n=50)", xlab = "Sample mean")
+#It likes the normal distribution
+
+mean(samples_mean)
+sd(samples_mean)
+
+sample_se <- apply(heights_sample, 2, function(x) sd(x)/sqrt(n))
+t_crits <- qt(0.975, df = n-1)
+t_crits
+lower_ci <- samples_mean - t_crits*sample_se     
+upper_ci <- samples_mean + t_crits*sample_se
+covered <- (lower_ci <= mu) & (upper_ci >= mu)
+covered
+coverage_percent <- mean(covered) * 100
+coverage_percent
+
+list(
+  mean_of_sample_means = mean(samples_mean),
+  sd_of_sample_means   = sd(samples_mean),
+  theoretical_sd       = sd / sqrt(n),
+  coverage_percent     = coverage_percent
+)
+```
+4.1 Still roughly normal and centered near 67, but wider than for n=100.
+
+4.2 Mean ≈ 66.925 (expected = 67). SD ≈ 0.507; theoretical SD = 0.495.
+
+4.3 Coverage about 93%; intervals are wider than for n=100 because SE is larger.
+
+## Q5
+5.1 With n=100, sampling distribution of \bar X is tighter and CIs are narrower because $SE=\sigma/\sqrt{n}$ is smaller.
+
+5.2 The histogram becomes smoother and the estimated coverage and summaries are closer to their theoretical values (smaller Monte Carlo error).
+
+5.3 Not exactly. Random samples produce different numerical results each run, but they should follow the same patterns (center near 67, SD near $\sigma/\sqrt{n}$, coverage ≈95%).

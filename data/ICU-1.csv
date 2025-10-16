@@ -1,0 +1,16 @@
+ID,STA,AGE,SEX,RAC,SER,INF,CPR,SYS,HRA,PRE,TYP,LOC,ADM,DIS
+184,0,88,Female,white,2,2,No,140,88,2,2,No coma or stupor,6/16/2011,18-Jun-11
+297,0,47,Male,white,2,2,No,120,83,1,1,zzz,4/2/2011,9-Apr-11
+365,0,32,Female,other,1,2,Yes,110,118,1,2,No coma or stupor,10/6/2011,12-Oct-11
+607,0,72,Male,white,2,1,No,134,60,1,2,No coma or stupor,1/4/2010,6-Jan-10
+170,0,51,Male,white,1,1,No,110,99,1,2,No coma or stupor,9/14/2010,25-Sep-10
+490,1,78,Male,white,1,2,No,110,81,1,2,No coma or stupor,5/13/2011,11-Jun-11
+346,1,75,Female,white,1,1,No,190,94,1,2,No coma or stupor,2/1/2010,15-Feb-10
+669,0,41,Female,black,1,1,No,110,144,1,2,zzz,5/10/2010,2-Jun-10
+295,0,64,Male,white,2,2,No,116,88,1,1,No coma or stupor,9/21/2010,6-Oct-10
+343,0,49,Male,white,1,2,No,112,112,1,2,No coma or stupor,2/11/2010,14-Feb-10
+195,1,57,Male,white,1,2,Yes,110,124,1,2,Coma,1/8/2011,9-Jan-11
+776,0,49,Male,black,1,1,No,150,100,1,2,No coma or stupor,11/3/2010,23-Nov-10
+814,0,73,Female,white,2,1,No,-999,83,1,2,No coma or stupor,4/1/2011,20-Apr-11
+655,0,58,Male,white,1,1,No,154,98,1,2,No coma or stupor,3/15/2011,2-Apr-11
+706,1,75,Female,white,1,2,Yes,150,66,1,2,Coma,5/12/2010,26-May-10

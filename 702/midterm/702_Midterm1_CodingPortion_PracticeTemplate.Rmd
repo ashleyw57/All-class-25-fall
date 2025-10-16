@@ -1,0 +1,91 @@
+---
+title: "BIOSTAT702 Midterm 1 -- Coding Portion"
+subtitle: "Practice Template"
+author: "INSERT YOUR NAME HERE"
+date: "2025-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**By submitting an exam, you are formally agreeing to the terms below and acknowledging that you have neither given nor received unauthorized aid in the completion of the exam.**
+
+## Instructions
+
+For the following set of tasks, you will be using the Hypoxia Dataset. Start by reading the Hypoxia Data Dictionary and Dataset Introduction. Optionally, you can also look at the Hypoxia Paper. 
+
+Type your answers and code where prompted. When you are done, click the knit button (knitting needle!) at the top of the Rstudio screen. It should create an .html file which will be your submission file to Canvas. 
+
+For this portion of the midterm, you may use any technology resources available to you, including notes, exercises, Internet searches, generative AI tools, etc. However, please be aware that you must submit answers to the questions written in your own words. This means that you should not quote phrases from other sources, including AI tools, even with proper attribution. This portion of the midterm must be done independently, without human assistance. **This portion of the exam is worth 30 points. Each question will be worth 5 points.**
+
+## Load in the Dataset 
+
+```{r}
+# the csv file MUST be in the same folder as this Rmd file in order for this code to run properly as is.
+Hypoxia = read.csv("hypoxia.csv")
+```
+
+
+## Question 1
+
+### REDACTED
+
+WRITE YOUR ANSWER HERE.
+
+
+## Question 2
+
+### REDACTED
+
+
+WRITE YOUR ANSWER HERE.
+
+
+## Question 3
+
+### REDACTED 
+
+WRITE YOUR ANSWER HERE
+
+```{r}
+# CODE HERE -- press the green arrow to run all the code in this "chunk"
+```
+
+
+## Question 4
+
+### REDACTED
+
+```{r}
+# CODE HERE 
+```
+
+## Question 5
+
+### REDACTED
+
+```{r}
+# CODE HERE 
+```
+
+## Question 6 
+
+### REDACTED
+
+WRITE ANSWER HERE. 
+
+```{r}
+# CODE HERE  
+```
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,275 @@
+---
+title: "Project&nbsp;1:&nbsp;Ovarian&nbsp;Cancer&nbsp;Analytic&nbsp;Dataset&nbsp;Preparation"
+author: "Jiaqi Wang"
+date: "October 10, 2025"
+format: html
+execute:
+  echo: false        # Hide code in final document
+  warning: false
+  message: false
+---
+
+```{r}
+# Load required packages
+library(tidyverse)
+library(lubridate)
+library(here)
+library(gtsummary)
+library(table1)
+```
+
+## Introduction
+
+Women with active ovarian cancer receive chemotherapy approximately every two to three weeks. Physicians are concerned about patients visiting the emergency department (ED) or being hospitalized between chemotherapy appointments. The goal of this project is to **process patient-level and encounter-level data** to create a clean, analytic dataset that will support future modeling of unanticipated hospital admissions (UHA).
+
+## 1. Data Import
+
+Both datasets are imported without hard-coding file paths using the here package.
+
+```{r}
+patient <- read_csv(here("data", "PatientData-1.csv"))
+encounter <- read_csv(here("data", "EncounterData-1.csv"))
+```
+
+## 2. Merge the patient-level data into the encounter-level data
+
+```{r}
+# Light typing / labels first
+patient_clean <- patient |>
+  mutate(
+    MRN = as.character(MRN),
+    DOB = mdy(DOB),
+    hypertension = factor(hypertension, levels = c(0,1), labels = c("No","Yes")),
+    CHF          = factor(CHF,          levels = c(0,1), labels = c("No","Yes")),
+    diabetes     = factor(diabetes,     levels = c(0,1), labels = c("No","Yes"))
+  )
+
+encounter_clean <- encounter |>
+  mutate(
+    MRN = as.character(MRN),
+    contact_date = mdy(contact_date),
+    enc_type = case_when(
+      str_detect(str_to_lower(enc_type), "office") ~ "Office visit",
+      TRUE ~ "ED/Hospitalization"
+    )
+  )
+
+# Merge on MRN → one row per encounter
+analytic <- encounter_clean |>
+  left_join(patient_clean, by = "MRN")
+```
+
+After merging the patient-level and encounter-level datasets using \*\*MRN\*\* as the unique identifier,  the analytic dataset now contains all encounter records with corresponding patient information.  
+
+Below is a brief preview showing the number of rows, variables, and the first few records.
+
+```{r}
+# ---- Preview merged analytic dataset ----
+analytic |>
+  select(
+    MRN,              # patient ID
+    contact_date,     # encounter-level variable
+    enc_type,         # encounter-level variable
+    temp, WBC,        # clinical variables
+    BMI.r,            # continuous variable
+    race, ethnicity,  # patient-level demographic
+    financialclass    # patient-level socioeconomic
+  ) |>
+  head(10) |>
+  knitr::kable(
+    caption = "Preview of Analytic Dataset (first 10 rows)",
+    align = "lcccccccc",
+    digits = 2
+  )
+```
+
+## 3. Analytic Dataset Description
+
+```{r}
+cat("Granularity: One row represents one patient encounter.\n")
+cat("Number of encounters:", nrow(analytic), "\n")
+cat("Number of variables:", ncol(analytic), "\n")
+cat("Unique patients:", dplyr::n_distinct(analytic$MRN), "\n")
+```
+
+The analytic dataset was created by merging the **encounter-level dataset** and the **patient-level dataset** using the variable *MRN* as a unique patient identifier.
+
+Each row in this dataset represents a **single patient encounter**, which may correspond to an office visit, an emergency department (ED) visit, or a hospitalization.
+
+The analytic dataset contains **550 encounters** from **50 unique patients** and includes **14 variables** in total.
+
+The encounter-level variables capture clinical and visit-specific information such as contact date, encounter type, temperature, distress score, white blood cell count (WBC), and body mass index (BMI).
+
+The patient-level variables include demographic characteristics (date of birth, race, ethnicity, and financial class) and comorbid conditions such as hypertension, congestive heart failure (CHF), and diabetes.
+
+Together, these variables provide both longitudinal encounter data and baseline patient characteristics, forming a clean and well-structured analytic dataset that can be used to develop predictive models for unanticipated hospital admissions (UHA) among ovarian cancer patients.
+
+## 4. Data cleaning
+
+Rules applied (from project notes):
+
+-   **DOB:** unrealistic birth years set to missing (e.g., year \< 1910 → NA).
+
+-   **BMI:** -999 is missing → recode to NA; then truncate to **10–50**.
+
+-   **WBC:** values \< 0.05 treated as detection-limit error → set to **0.05**; truncate values \> 50 to **50**.
+
+-   **Temperature / Distress:** constrained to plausible ranges (95–105 °F; 0–10).
+
+After applying the cleaning rules above, we verified that implausible values were corrected.\
+The table below compares the minimum and maximum values of key variables before and after cleaning.
+
+```{r}
+analytic <- analytic |>
+  mutate(
+    # DOB
+    DOB = if_else(!is.na(DOB) & year(DOB) < 1910, as.Date(NA), DOB),
+
+    # BMI
+    BMI.r = na_if(BMI.r, -999),
+    BMI.r = if_else(!is.na(BMI.r) & BMI.r < 10, 10, BMI.r),
+    BMI.r = if_else(!is.na(BMI.r) & BMI.r > 50, 50, BMI.r),
+
+    # WBC
+    WBC = if_else(!is.na(WBC) & WBC < 0.05, 0.05, WBC),
+    WBC = if_else(!is.na(WBC) & WBC > 50, 50, WBC),
+
+    # Temp & distress (optional but simple)
+    temp = if_else(!is.na(temp) & temp < 95, 95, temp),
+    temp = if_else(!is.na(temp) & temp > 105, 105, temp),
+    distress_score = 
+      if_else(!is.na(distress_score) & distress_score < 0, 0, distress_score),
+    distress_score = 
+      if_else(!is.na(distress_score) & distress_score > 10, 10, distress_score)
+  )
+
+# ---- add this block right below ----
+
+# Demonstrate that the data have been cleaned
+clean_check <- tibble(
+  Variable = c("WBC", "BMI.r", "temp", "distress_score"),
+  Before_Min = c(min(encounter$WBC, na.rm = TRUE),
+                 min(encounter$BMI.r, na.rm = TRUE),
+                 min(encounter$temp, na.rm = TRUE),
+                 min(encounter$distress_score, na.rm = TRUE)),
+  Before_Max = c(max(encounter$WBC, na.rm = TRUE),
+                 max(encounter$BMI.r, na.rm = TRUE),
+                 max(encounter$temp, na.rm = TRUE),
+                 max(encounter$distress_score, na.rm = TRUE)),
+  After_Min = c(min(analytic$WBC, na.rm = TRUE),
+                min(analytic$BMI.r, na.rm = TRUE),
+                min(analytic$temp, na.rm = TRUE),
+                min(analytic$distress_score, na.rm = TRUE)),
+  After_Max = c(max(analytic$WBC, na.rm = TRUE),
+                max(analytic$BMI.r, na.rm = TRUE),
+                max(analytic$temp, na.rm = TRUE),
+                max(analytic$distress_score, na.rm = TRUE))
+)
+
+knitr::kable(
+  clean_check,
+  caption = "Comparison of Selected Variables Before and After Data Cleaning",
+  align = "lcccc"
+) |>
+  kableExtra::kable_styling(full_width = FALSE, 
+                            position = "center", 
+                            htmltable_class = "no-break")
+```
+
+As shown above, implausible or out-of-range values were truncated to clinically reasonable limits, confirming that the dataset was successfully cleaned.
+
+## 5. WBC Re-categorization
+
+WBC is recategorized per assignment cut points.
+
+```{r}
+analytic <- analytic |>
+  mutate(
+    WBC_cat = case_when(
+      is.na(WBC) ~ "Not Taken",
+      WBC < 3.2  ~ "Low (<3.2)",
+      WBC <= 9.8 ~ "Normal (3.2–9.8)",
+      WBC > 9.8  ~ "High (>9.8)"
+    ),
+    # ensure logical order (not alphabetical)
+    WBC_cat = factor(WBC_cat,
+                     levels = c("Low (<3.2)", "Normal (3.2–9.8)", "High (>9.8)", "Not Taken"))
+  )
+```
+
+## 6. WBC Summary Table
+
+Counts and percentages of encounters within each WBC group.
+
+```{r}
+# 确保逻辑顺序（避免按字母排序）
+analytic <- analytic |>
+  mutate(
+    WBC_cat = factor(
+      WBC_cat,
+      levels = c("Low (<3.2)", "Normal (3.2–9.8)", "High (>9.8)", "Not Taken")
+    )
+  )
+
+# 统计 counts 与 %
+wbc_table <- analytic |>
+  count(WBC_cat, name = "Count") |>
+  mutate(Percent = round(100 * Count / sum(Count), 1))
+
+# 学术风格三线表
+knitr::kable(
+  wbc_table,
+  caption = "Table A. Counts (%) of Encounters within Each WBC Category",
+  booktabs = TRUE,
+  align = "lcc"
+) |>
+  kableExtra::kable_styling(full_width = FALSE, position = "center")
+```
+
+## 7. Patient-Level Table 1
+
+Baseline characteristics at the **patient level** (race, ethnicity, financial class, hypertension, CHF, diabetes).
+
+```{r}
+# ---- Patient-level Table 1 ----
+# Fix comorbidity encoding and make factors
+patient_clean <- patient |>
+  mutate(
+    MRN = as.character(MRN),
+    DOB = lubridate::mdy(DOB),
+    # Recode Y/N to Yes/No
+    across(c(hypertension, CHF, diabetes),
+           ~ recode(as.character(.x),
+                    "Y" = "Yes", "N" = "No",
+                    .default = NA_character_)),
+    across(c(hypertension, CHF, diabetes),
+           ~ factor(.x, levels = c("No", "Yes"))),
+    # Ensure categorical for demographics
+    race           = factor(race),
+    ethnicity      = factor(ethnicity),
+    financialclass = factor(financialclass)
+  )
+
+# Create Table 1 with counts and percentages
+table1(
+  ~ race + ethnicity + financialclass +
+    hypertension + CHF + diabetes,
+  data = patient_clean,
+  caption = "Table 1. Patient-level Counts and Percentages (Baseline Characteristics)"
+)
+```
+
+## 8. Brief Summary
+
+```{r}
+# dir.create(here("outputs"), showWarnings = FALSE)
+# write_csv(analytic, here("outputs", "analytic_dataset.csv"))
+```
+
+The report produced a single analytic dataset with encounter-level rows, merged with patient demographics and comorbidities.
+
+Missing/implausible values were handled via explicit missing code conversion and clinically guided truncation.
+
+WBC was categorized into Low, Normal, High, and Not Taken, and required summary tables were constructed.
+
+This dataset is ready for downstream modeling of ED visits and unanticipated hospital admissions.

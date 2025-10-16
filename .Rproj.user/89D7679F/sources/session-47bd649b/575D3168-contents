@@ -1,0 +1,87 @@
+---
+title: "Untitled"
+author: "Jiaqi Wang"
+date: "2025-10-09"
+output: html_document
+---
+
+
+```{r}
+#| label: tbl1
+#| tbl-cap: "Table 1. Baseline Characteristics of Patients"
+
+library(gtsummary)
+library(flextable)
+
+# 保证三列是 No/Yes 的二分类因子（你已确认原始是 'Y'/'N'）
+to_yesno_factor <- function(x) {
+  x <- as.character(x)
+  out <- dplyr::case_when(
+    x == "Y" ~ "Yes",
+    x == "N" ~ "No",
+    TRUE     ~ NA_character_
+  )
+  factor(out, levels = c("No", "Yes"))
+}
+
+patient_tbl <- patient %>%
+  dplyr::mutate(
+    race           = factor(race),
+    ethnicity      = factor(ethnicity),
+    financialclass = factor(financialclass),
+    hypertension   = to_yesno_factor(hypertension),
+    CHF            = to_yesno_factor(CHF),
+    diabetes       = to_yesno_factor(diabetes)
+  )
+
+# 关键：把二分类变量声明为 "dichotomous"，并指定只显示 "Yes"
+tbl1 <- tbl_summary(
+  data    = patient_tbl,
+  include = c(race, ethnicity, financialclass, hypertension, CHF, diabetes),
+  type    = list(hypertension ~ "dichotomous",
+                 CHF          ~ "dichotomous",
+                 diabetes     ~ "dichotomous"),
+  value   = list(hypertension ~ "Yes",
+                 CHF          ~ "Yes",
+                 diabetes     ~ "Yes"),
+  statistic = list(
+    all_categorical() ~ "{n} ({p}%)",
+    all_dichotomous() ~ "{n} ({p}%)"  # 明确二分类的显示格式
+  ),
+  missing = "no",
+  label = list(
+    race           ~ "Race",
+    ethnicity      ~ "Ethnicity",
+    financialclass ~ "Financial Class",
+    hypertension   ~ "Hypertension, n (%)",
+    CHF            ~ "Congestive Heart Failure, n (%)",
+    diabetes       ~ "Diabetes, n (%)"
+  )
+) |>
+  bold_labels() |>
+  as_flex_table() |>
+  autofit()
+
+tbl1   # 确保最后输出对象
+```
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

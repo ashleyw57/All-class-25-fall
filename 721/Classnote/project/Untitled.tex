@@ -1,0 +1,409 @@
+% Options for packages loaded elsewhere
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
+%
+\documentclass[
+  letterpaper,
+  DIV=11,
+  numbers=noendperiod]{scrartcl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+% Make \paragraph and \subparagraph free-standing
+\makeatletter
+\ifx\paragraph\undefined\else
+  \let\oldparagraph\paragraph
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+  \let\oldsubparagraph\subparagraph
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+\makeatother
+
+
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+
+
+
+
+
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+
+
+ 
+
+
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\KOMAoption{captions}{tableheading}
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\AtBeginDocument{%
+\ifdefined\contentsname
+  \renewcommand*\contentsname{Table of contents}
+\else
+  \newcommand\contentsname{Table of contents}
+\fi
+\ifdefined\listfigurename
+  \renewcommand*\listfigurename{List of Figures}
+\else
+  \newcommand\listfigurename{List of Figures}
+\fi
+\ifdefined\listtablename
+  \renewcommand*\listtablename{List of Tables}
+\else
+  \newcommand\listtablename{List of Tables}
+\fi
+\ifdefined\figurename
+  \renewcommand*\figurename{Figure}
+\else
+  \newcommand\figurename{Figure}
+\fi
+\ifdefined\tablename
+  \renewcommand*\tablename{Table}
+\else
+  \newcommand\tablename{Table}
+\fi
+}
+\@ifpackageloaded{float}{}{\usepackage{float}}
+\floatstyle{ruled}
+\@ifundefined{c@chapter}{\newfloat{codelisting}{h}{lop}}{\newfloat{codelisting}{h}{lop}[chapter]}
+\floatname{codelisting}{Listing}
+\newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\@ifpackageloaded{caption}{}{\usepackage{caption}}
+\@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Project 1: Ovarian Cancer Analytic Dataset Preparation},
+  pdfauthor={Jiaqi Wang},
+  colorlinks=true,
+  linkcolor={blue},
+  filecolor={Maroon},
+  citecolor={Blue},
+  urlcolor={Blue},
+  pdfcreator={LaTeX via pandoc}}
+
+
+\title{Project 1: Ovarian Cancer Analytic Dataset Preparation}
+\author{Jiaqi Wang}
+\date{2025-10-10}
+\begin{document}
+\maketitle
+
+
+\subsection{Introduction}\label{introduction}
+
+Women with active ovarian cancer receive chemotherapy approximately
+every two to three weeks.Physicians are concerned about patients
+visiting the emergency department (ED) or being hospitalized between
+chemotherapy appointments.The goal of this project is to \textbf{process
+patient-level and encounter-level data} to create a clean, analytic
+dataset that will support future modeling of unanticipated hospital
+admissions (UHA).
+
+\subsection{1. Data Import}\label{data-import}
+
+Both datasets are imported without hard-coding file paths using the here
+package.
+
+\subsection{2. Merge the patient-level data into the encounter-level
+data}\label{merge-the-patient-level-data-into-the-encounter-level-data}
+
+After merging the patient-level and encounter-level datasets using
+**MRN** as the unique identifier, ~the analytic dataset now contains all
+encounter records with corresponding patient information. ~
+
+Below is a brief preview showing the number of rows, variables, and the
+first few records.
+
+\begin{verbatim}
+[1] 550
+\end{verbatim}
+
+\begin{verbatim}
+[1] 550
+\end{verbatim}
+
+\begin{verbatim}
+ [1] "MRN"            "contact_date"   "enc_type"       "temp"          
+ [5] "distress_score" "WBC"            "BMI.r"          "DOB"           
+ [9] "race"           "financialclass" "ethnicity"      "hypertension"  
+[13] "CHF"            "diabetes"      
+\end{verbatim}
+
+\begin{longtable}[t]{lcccccccclcccc}
+\caption{\label{tab:unnamed-chunk-4}Preview of Analytic Dataset (first 10 rows)}\\
+\toprule
+MRN & contact\_date & enc\_type & temp & distress\_score & WBC & BMI.r & DOB & race & financialclass & ethnicity & hypertension & CHF & diabetes\\
+\midrule
+HJ9754 & 2016-06-26 & Office visit & 97.91 & 2 & 15.12 & 28.33 & 1999-06-05 & White & Private & non-Hispanic & NA & NA & NA\\
+GE5166 & 2016-08-08 & Office visit & 99.03 & 2 & 6.86 & 38.22 & 1993-09-16 & White & Private & non-Hispanic & NA & NA & NA\\
+XV9573 & 2018-01-20 & Office visit & 99.15 & 2 & 5.48 & 32.13 & 1976-09-27 & White & Private & non-Hispanic & NA & NA & NA\\
+CQ9338 & 2015-07-05 & Office visit & 99.09 & 3 & 15.11 & 25.09 & 1961-07-19 & Black & Medicare & non-Hispanic & NA & NA & NA\\
+DH1301 & 2018-03-25 & Office visit & 99.18 & 3 & 3.40 & 33.41 & 1957-06-30 & Other & Private & non-Hispanic & NA & NA & NA\\
+\addlinespace
+WQ8508 & 2019-08-25 & Office visit & 97.61 & 1 & 5.04 & 21.30 & 1970-05-16 & White & Medicare & non-Hispanic & NA & NA & NA\\
+XE4615 & 2017-06-20 & Office visit & 99.66 & 4 & 16.43 & 30.18 & 1997-02-11 & Black & Medicare & non-Hispanic & NA & NA & NA\\
+IO6623 & 2015-08-10 & Office visit & 99.43 & 2 & 2.87 & 26.04 & 1985-05-07 & Other & Medicare & non-Hispanic & NA & NA & NA\\
+JV9469 & 2014-04-11 & ED/Hospitalization & 98.32 & NA & NA & -999.00 & 1964-10-30 & White & Private & non-Hispanic & NA & NA & NA\\
+NE9449 & 2019-02-15 & Office visit & 97.18 & 4 & 8.38 & 37.36 & 1966-07-20 & White & Private & non-Hispanic & NA & NA & NA\\
+\bottomrule
+\end{longtable}
+
+\subsection{3. Analytic Dataset
+Description}\label{analytic-dataset-description}
+
+\begin{verbatim}
+Granularity: One row represents one patient encounter.
+\end{verbatim}
+
+\begin{verbatim}
+Number of encounters: 550 
+\end{verbatim}
+
+\begin{verbatim}
+Number of variables: 14 
+\end{verbatim}
+
+\begin{verbatim}
+Unique patients: 50 
+\end{verbatim}
+
+The analytic dataset was created by merging the \textbf{encounter-level
+dataset} and the \textbf{patient-level dataset} using the variable
+\emph{MRN} as a unique patient identifier.
+
+Each row in this dataset represents a \textbf{single patient encounter},
+which may correspond to an office visit, an emergency department (ED)
+visit, or a hospitalization.
+
+The analytic dataset contains \textbf{550 encounters} from \textbf{50
+unique patients} and includes \textbf{14 variables} in total.
+
+The encounter-level variables capture clinical and visit-specific
+information such as contact date, encounter type, temperature, distress
+score, white blood cell count (WBC), and body mass index (BMI).
+
+The patient-level variables include demographic characteristics (date of
+birth, race, ethnicity, and financial class) and comorbid conditions
+such as hypertension, congestive heart failure (CHF), and diabetes.
+
+Together, these variables provide both longitudinal encounter data and
+baseline patient characteristics, forming a clean and well-structured
+analytic dataset that can be used to develop predictive models for
+unanticipated hospital admissions (UHA) among ovarian cancer patients.
+
+\subsection{4. Data cleaning}\label{data-cleaning}
+
+Rules applied (from project notes):
+
+\begin{itemize}
+\item
+  \textbf{DOB:} unrealistic birth years set to missing (e.g., year
+  \textless{} 1910 → NA).
+\item
+  \textbf{BMI:} -999 is missing → recode to NA; then truncate to
+  \textbf{10--50}.
+\item
+  \textbf{WBC:} values \textless{} 0.05 treated as detection-limit error
+  → set to \textbf{0.05}; truncate values \textgreater{} 50 to
+  \textbf{50}.
+\item
+  \textbf{Temperature / Distress:} constrained to plausible ranges
+  (95--105 °F; 0--10).
+\end{itemize}
+
+After applying the cleaning rules above, we verified that implausible
+values were corrected.\\
+The table below compares the minimum and maximum values of key variables
+before and after cleaning.
+
+\begin{longtable}[t]{lcccc}
+\caption{\label{tab:unnamed-chunk-6}Comparison of Selected Variables Before and After Data Cleaning}\\
+\toprule
+Variable & Before\_Min & Before\_Max & After\_Min & After\_Max\\
+\midrule
+WBC & 0.00 & 53.60 & 0.05 & 50.0\\
+BMI.r & -999.00 & 352.13 & 10.00 & 50.0\\
+temp & 96.26 & 103.20 & 96.26 & 103.2\\
+distress\_score & 0.00 & 7.00 & 0.00 & 7.0\\
+\bottomrule
+\end{longtable}
+
+As shown above, implausible or out-of-range values were truncated to
+clinically reasonable limits, confirming that the dataset was
+successfully cleaned.
+
+\subsection{5. WBC Re-categorization}\label{wbc-re-categorization}
+
+WBC is recategorized per assignment cut points.
+
+\subsection{6. WBC Summary Table}\label{wbc-summary-table}
+
+Counts and percentages of encounters within each WBC group.
+
+\begin{longtable}[t]{lcc}
+\caption{\label{tab:unnamed-chunk-8}Table A. Counts (%) of Encounters within Each WBC Category}\\
+\toprule
+WBC\_cat & Count & Percent\\
+\midrule
+Low (<3.2) & 169 & 30.7\\
+Normal (3.2–9.8) & 196 & 35.6\\
+High (>9.8) & 113 & 20.5\\
+Not Taken & 72 & 13.1\\
+\bottomrule
+\end{longtable}
+
+\subsection{7. Patient-Level Table 1}\label{patient-level-table-1}
+
+Baseline characteristics at the \textbf{patient level} (race, ethnicity,
+financial class, hypertension, CHF, diabetes).
+
+\begin{table}
+
+\caption{\label{tab:unnamed-chunk-9}Table 1. Patient-level Counts and Percentages (Baseline Characteristics)}
+\centering
+\begin{tabular}[t]{ll}
+\toprule
+  & Overall\\
+\midrule
+ & (N=50)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{race}}\\
+\hspace{1em}Black & 10 (20.0\%)\\
+\hspace{1em}Other & 3 (6.0\%)\\
+\hspace{1em}White & 37 (74.0\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{ethnicity}}\\
+\hspace{1em}Hispanic & 3 (6.0\%)\\
+\hspace{1em}non-Hispanic & 47 (94.0\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{financialclass}}\\
+\hspace{1em}Medicare & 29 (58.0\%)\\
+\hspace{1em}Private & 21 (42.0\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{hypertension}}\\
+\hspace{1em}No & 30 (60.0\%)\\
+\hspace{1em}Yes & 20 (40.0\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{CHF}}\\
+\hspace{1em}No & 45 (90.0\%)\\
+\hspace{1em}Yes & 5 (10.0\%)\\
+\addlinespace[0.3em]
+\multicolumn{2}{l}{\textbf{diabetes}}\\
+\hspace{1em}No & 48 (96.0\%)\\
+\hspace{1em}Yes & 2 (4.0\%)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{8.Brief Summary}\label{brief-summary}
+
+The report produced a single analytic dataset with encounter-level rows,
+merged with patient demographics and comorbidities.
+
+Missing/implausible values were handled via explicit missing code
+conversion and clinically guided truncation.
+
+WBC was categorized into Low, Normal, High, and Not Taken, and required
+summary tables were constructed.
+
+This dataset is ready for downstream modeling of ED visits and
+unanticipated hospital admissions.
+
+
+
+
+\end{document}

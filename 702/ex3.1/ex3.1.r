@@ -1,0 +1,79 @@
+ultra_altered <- read.csv(here::here("data","ultrarunning_altered.csv"))
+pb100k_dec <- ultra_altered$pb100k_dec
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+install.packages("moments")
+library(moments)
+
+ggplot(ultra_altered, aes(y = pb100k_dec)) + 
+  geom_boxplot() +
+  labs(y = "PB 100K time (hours)", title = "Boxplot of pb100k_dec" )
+
+ggplot(ultra_altered, aes(x = pb100k_dec)) +
+  geom_histogram(aes(y = after_stat(density)),
+                 bins = 30, fill = "lightblue", color = "white")+
+  labs(x = "PB 100K time(hours)", title = "histogram of pb100k_dec")
+y <- ultra_altered |> drop_na(pb100k_dec) |> pull(pb100k_dec)
+skew_val <- skewness(y)
+skew_val
+
+mean_val <- mean(y)
+sd_val <- sd(y)
+med_val <- median(y)
+iqr_val <- IQR(y)
+mean_val; sd_val; med_val; iqr_val
+mean_val - med_val
+quantile(y, probs = c(0.25, 0.5, 0.75))
+
+#The mean finishing time (15.05 hours) is higher than the median (14.16 hours).The mean of 15.05 hours falls within the IQR (12.0–16.5 hours), at about 68% of the distance from Q1 to Q3, i.e., closer to Q3. This matches the boxplot, where the mean appears in the upper half of the box.”
+
+prop_above_mean<- mean(y > mean_val)
+prop_above_mean
+
+# 直方图 + 核密度 + 正态曲线
+ggplot(data.frame(y), aes(x = y)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30,
+                 fill = "lightblue", color = "white") +
+  geom_density(linewidth = 1) +
+  stat_function(fun = dnorm, args = list(mean = mean_val, sd = sd_val),
+                linewidth = 1, color = "red") +
+  labs(x = "100k time (hours)", y = "Density",
+       title = "Histogram + Kernel Density + Normal Curve")
+
+# Q-Q 图
+ggplot(data.frame(sample = y), aes(sample = sample)) +
+  stat_qq() + stat_qq_line(color = "red") +
+  labs(title = "Normal Q–Q Plot")
+
+ttest_ultra = t.test(y,mu = 14)
+ttest_ultra$statistic   # t 值
+ttest_ultra$parameter   # 自由度 df
+ttest_ultra$p.value     # p 值
+ttest_ultra$conf.int    # 95% CI for mean
+ttest_ultra$estimate    # 样本均值
+#We conducted a one-sample t-test to compare the mean ultramarathon finishing time against 14 hours (H₀: μ = 14). The sample mean was 15.05 hours. The test yielded t(287) = 3.79, p < 0.001, with a 95% confidence interval for the mean of [14.50, 15.59]. Since 14 does not fall within this interval, we reject the null hypothesis and conclude that the true mean finishing time is significantly greater than 14 hours.
+
+successes <- sum(ultra_altered$pb100k_dec > 14)
+
+trials <- nrow(ultra_altered)
+
+binom.test(successes, trials, 0.5)
+
+wilcox.test(ultra_altered$pb100k_dec,
+            mu = 14,
+            conf.int = TRUE,
+            correct = FALSE)
+#1.	Sign test:
+  #The binomial sign test yielded a p-value of about 0.175, which is not statistically significant. This suggests insufficient evidence to reject the null hypothesis that the population median is 14 hours.
+#2.	Wilcoxon signed-rank test:
+  #The Wilcoxon test gave V = 24277, p = 0.014, with a 95% confidence interval of [14.10, 14.96] and an estimated median (Hodges–Lehmann) of 14.51 hours. Since 14 is not contained in this interval and the p-value is below 0.05, we reject the null hypothesis, indicating that the true median differs significantly from 14 hours.
+#3.	Comparison and interpretation:
+  #The two tests gave different p-values because they use different information: the sign test only considers whether observations are above or below 14, while the Wilcoxon test also incorporates the magnitude of the differences. When the distribution is approximately symmetric, the Wilcoxon test is more powerful. In our data, which are somewhat right-skewed, the tests diverged. If the research question is about the typical central tendency (median) in a skewed distribution, the Wilcoxon test is generally preferable, while the sign test remains the most robust under extreme asymmetry.
+  
+logy <- log(y)
+log_fit <- t.test(logy)
+geo_point <- exp(log_fit$estimate)
+geo_ci <- exp(log_fit$conf.int)
+geo_point; geo_ci
+hist(logy)

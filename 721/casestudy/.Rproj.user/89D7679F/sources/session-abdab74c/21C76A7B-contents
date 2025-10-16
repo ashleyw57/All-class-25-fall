@@ -1,0 +1,94 @@
+library(tidyverse)
+library(here)
+
+pats   <- read_csv(here("dem.csv"))
+cta    <- read_csv(here("cta.csv"))
+echo   <- read_csv(here("echo.csv"))
+endpts <- read_csv(here("endpts.csv"))
+
+glimpse(pats)
+glimpse(cta)
+glimpse(echo)
+glimpse(endpts)
+
+library(readr)
+library(here)
+
+# 方案 A：UTF-8（常见）
+cta <- read_csv(
+  here("cta.csv"),
+  locale    = locale(encoding = "UTF-8"),
+  col_types = cols(
+    patid        = col_character(),
+    cta_date     = col_date(),        # 如果不是日期就改成 col_character()
+    cac_category = col_character()    # 关键：强制字符列
+  )
+)
+cta %>% count(cac_category, sort = TRUE) %>% head(20)
+
+library(dplyr)
+library(forcats)
+
+# 1) 设定有序因子（从轻到重）
+levels_cac <- c("0-99", "100-399", "≥400")
+cta_clean <- cta %>%
+  mutate(cac_category = factor(cac_category, levels = levels_cac, ordered = TRUE))
+
+# 2) CTA 按病人汇总：取最重档 & CTA 次数
+cta_summary <- cta_clean %>%
+  group_by(patid) %>%
+  summarise(
+    max_cac = max(cac_category, na.rm = TRUE),  # 有序因子最大=最重
+    n_cta   = n(),
+    .groups = "drop"
+  )
+
+## ---- 2) Echo: summarise per-patient (ever positive + #echo) ----
+# Try to find the positive/indicator column automatically
+echo_pos_col <- intersect(c("ocad_positive", "echo_positive", "positive"), names(echo))[1]
+if (is.na(echo_pos_col)) {
+  # fallback: set it manually if your file uses another name
+  # echo_pos_col <- "YOUR_COLUMN_NAME"
+  stop("Couldn't find a positive/indicator column in echo. Set `echo_pos_col` manually.")
+}
+
+echo_summary <- echo %>%
+  mutate(
+    # coerce to 0/1 robustly
+    pos = dplyr::case_when(
+      !!sym(echo_pos_col) %in% c(1, "1", TRUE, "Yes", "yes", "Y", "y") ~ 1L,
+      !!sym(echo_pos_col) %in% c(0, "0", FALSE, "No", "no", "N", "n")  ~ 0L,
+      is.na(!!sym(echo_pos_col))                                       ~ NA_integer_,
+      TRUE                                                             ~ as.integer(!!sym(echo_pos_col))
+    )
+  ) %>%
+  group_by(patid) %>%
+  summarise(
+    echo_positive = max(pos, na.rm = TRUE),   # ever-positive logic
+    n_echo        = n(),
+    .groups       = "drop"
+  ) %>%
+  mutate(
+    echo_positive = dplyr::if_else(is.infinite(echo_positive), NA_integer_, echo_positive)
+  )
+
+## ---- 3) Join everything: demographics + CTA + Echo + endpoints ----
+analytic <- pats %>%
+  left_join(cta_summary,  by = "patid") %>%
+  left_join(echo_summary, by = "patid") %>%
+  left_join(endpts,       by = "patid")
+
+## Optional: treat missing as the lowest CAC bucket and echo_negative
+analytic <- analytic %>%
+  mutate(
+    max_cac       = fct_explicit_na(max_cac, na_level = "0-99"),
+    echo_positive = tidyr::replace_na(echo_positive, 0L)
+  )
+
+## ---- 4) Quick QC ----
+stopifnot(!anyDuplicated(analytic$patid))     # one row per patient
+print(table(analytic$max_cac, useNA = "ifany"))
+print(table(analytic$echo_positive, useNA = "ifany"))
+
+## ---- 5) Save final analytic dataset ----
+readr::write_csv(analytic, "analytic_dataset.csv")

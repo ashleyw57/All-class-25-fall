@@ -1,0 +1,109 @@
+/* ===========================
+   Global page + print tweaks
+   =========================== */
+
+/* 页面边距（仅打印成 PDF 时生效） */
+@media print {
+  @page { margin: 0.75in; }
+}
+
+/* ----- 表格打印不分页 & 表头重复 ----- */
+@media print {
+  /* 所有表格避免在内部断页 */
+  table, tr, td, th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  /* 表头在跨页时重复 */
+  thead { display: table-header-group; }
+
+  /* 标题后紧跟的表格与标题保持在同一页 */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+  h1 + table,
+  h2 + table,
+  h3 + table,
+  h4 + table,
+  h5 + table,
+  h6 + table {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+}
+
+/* ----- 表格标题居中（屏幕+打印） ----- */
+caption {
+  caption-side: top;
+  text-align: center;
+  font-weight: 600;
+  margin: 6px 0;
+}
+@media print {
+  caption { font-weight: bold; }
+}
+
+/* ----- 表格整体更紧凑（屏幕+打印） ----- */
+table { font-size: 95%; }
+@media print { table { font-size: 90%; } }
+
+/* 长代码块或图片，打印时不要被切开 */
+pre, code, img { break-inside: avoid !important; page-break-inside: avoid !important; }
+
+/* ===========================
+   DT::datatable() 友好设置
+   =========================== */
+
+/* datatable 在打印时隐藏多余控件（搜索/分页/信息），只保留表格主体 */
+@media print {
+  .dataTables_filter,
+  .dataTables_length,
+  .dataTables_info,
+  .dataTables_paginate {
+    display: none !important;
+  }
+  table.dataTable { width: 100% !important; }
+}
+
+/* 列内容稍微居中（可按需注释掉） */
+table.dataTable tbody td, table.dataTable thead th {
+  vertical-align: middle;
+}
+
+/* ===========================
+   可选：手动不分页类
+   用法：给需要整体不分页的块套 <div class="no-break"> ... </div>
+   =========================== */
+@media print {
+  .no-break { page-break-inside: avoid !important; break-inside: avoid !important; }
+}
+
+> 注意：用的是 Quarto/Pandoc 的 fenced div 语法 `::: {.keep-together}`，它会在渲染成 HTML 时生成 `<div class="keep-together"> ... </div>`。
+
+### 2) 在 `styles.css` 里加这些规则（或确认已存在）
+```css
+/* 把一整块（标题+文字+表格）视为不可拆的单元 */
+@media print {
+  .keep-together {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .keep-together h1,
+  .keep-together h2,
+  .keep-together h3,
+  .keep-together h4,
+  .keep-together h5,
+  .keep-together h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    margin-bottom: 0.4em;  /* 紧一点，留出空间防止被挤翻页 */
+  }
+  .keep-together table,
+  .keep-together tr,
+  .keep-together td,
+  .keep-together th {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}

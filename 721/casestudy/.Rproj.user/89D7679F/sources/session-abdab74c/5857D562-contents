@@ -1,0 +1,89 @@
+library(tidyverse)
+library(here)
+
+# 1) 读取四个CSV文件
+pats   <- read_csv(here("dem.csv"))     # Patient-level demographics
+cta    <- read_csv(here("cta.csv"))     # CTA test results
+echo   <- read_csv(here("echo.csv"))    # Echo test results
+endpts <- read_csv(here("endpts.csv"))  # Endpoints (MI/death)
+
+glimpse(pats)
+glimpse(cta)
+glimpse(echo)
+glimpse(endpts)
+
+# 每个文件中唯一病人数量
+length(unique(pats$patid))
+length(unique(cta$patid))
+length(unique(echo$patid))
+length(unique(endpts$patid))
+
+# 查看不同的 CAC 分级类别
+cta %>% count(cac_category, sort = TRUE)
+
+# 设定因子顺序
+levels_cac <- c("0-99", "100-399", "≥400")
+
+cta_clean <- cta %>%
+  mutate(
+    cac_category = factor(cac_category, levels = levels_cac, ordered = TRUE)
+  )
+
+# 汇总成每个病人一行（取最高级别）
+cta_summary <- cta_clean %>%
+  group_by(patid) %>%
+  summarise(
+    max_cac = max(cac_category, na.rm = TRUE),
+    n_cta   = n(),
+    .groups = "drop"
+  )
+
+# 确认阳性变量名
+names(echo)
+
+# 汇总 Echo 检查：有无阳性、次数
+echo_summary <- echo %>%
+  mutate(
+    positive = if_else(ocad_positive == 1, 1, 0)
+  ) %>%
+  group_by(patid) %>%
+  summarise(
+    echo_positive = max(positive, na.rm = TRUE),
+    n_echo        = n(),
+    .groups       = "drop"
+  ) %>%
+  mutate(
+    echo_positive = if_else(is.infinite(echo_positive), NA_integer_, echo_positive)
+  )
+
+# 查看列名
+names(endpts)
+
+# 确保日期型变量正确
+# ---- Clean and format endpoints ----
+endpts <- endpts %>%
+  mutate(
+    mi_date        = as.Date(mi_date, format = "%Y/%m/%d"),
+    death_date     = as.Date(death_date, format = "%Y/%m/%d"),
+    mi_occurred    = as.numeric(mi_occurred),
+    death_occurred = as.numeric(death_occurred)
+  )
+endpts <- endpts %>%
+  rename(death_occur = death_occurred)
+analytic <- pats %>%
+  left_join(cta_summary,  by = "patid") %>%
+  left_join(echo_summary, by = "patid") %>%
+  left_join(endpts,       by = "patid") %>%
+  mutate(
+    max_cac       = fct_explicit_na(max_cac, na_level = "No CTA"),
+    n_cta         = replace_na(n_cta, 0),
+    echo_positive = replace_na(echo_positive, 0),
+    n_echo        = replace_na(n_echo, 0),
+    mi_occurred   = replace_na(mi_occurred, 0),
+    death_occur   = replace_na(death_occur, 0)
+  )
+# QC 检查
+stopifnot(!anyDuplicated(analytic$patid))
+summary(analytic)
+
+write_csv(analytic, here("analytic_dataset.csv"))

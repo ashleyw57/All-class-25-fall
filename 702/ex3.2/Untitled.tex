@@ -1,0 +1,428 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={answer for ex3.2},
+  pdfauthor={Jiaqi Wang},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{answer for ex3.2}
+\author{Jiaqi Wang}
+\date{2025-10-02}
+
+\begin{document}
+\maketitle
+
+\section{Question 1}\label{question-1}
+
+\subsection{1-1}\label{section}
+
+That's because in this problem, we need to evaluate whether the
+MRD-negative complete remission rate at the end of the induction with
+ponatinib is significantly greater than the previously reported rate for
+second-generation tyrosine kinase inhibitors. That means testing whether
+the MRD negativity rate is greater than 16\%. From a clinical
+perspective, the result of equivalence or inferiorty would not alter
+treatment, so we just need to test whether this treatment is a better
+one. Accordingly, a one-sided one-sample proportion test is the most
+appropriate statistical procedure, as we are only intererted in
+treatment improvement.
+
+\subsection{1-2}\label{section-1}
+
+The MRD-negative complete remission rate at the end of induction for
+ponatinib was 43.0\% (61/142).
+
+\subsection{1-3}\label{section-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{prop.test}\NormalTok{(}\DecValTok{61}\NormalTok{, }\DecValTok{142}\NormalTok{, }
+          \AttributeTok{p =} \FloatTok{0.16}\NormalTok{, }
+          \AttributeTok{alternative =} \StringTok{"greater"}\NormalTok{, }
+          \AttributeTok{correct =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  1-sample proportions test without continuity correction
+## 
+## data:  61 out of 142, null probability 0.16
+## X-squared = 76.781, df = 1, p-value < 2.2e-16
+## alternative hypothesis: true p is greater than 0.16
+## 95 percent confidence interval:
+##  0.3631946 1.0000000
+## sample estimates:
+##         p 
+## 0.4295775
+\end{verbatim}
+
+Using a one-sided one-sample proportion test without continuity
+correction (H₀: π ≤ 0.16), we obtain z≈8.76 and one-sided
+``p≈9.6\times10\^{}\{-19\}''. We reject H₀ and conclude that the
+MRD-negativity rate (61/142 = 43.0\%) is significantly greater than
+16\%.
+
+\subsection{1-4}\label{section-3}
+
+In this context, the one-sided p-value is the probability, under the
+null hypothesis that the true MRD-negativity rate is 16\%, of observing
+a sample proportion as large as or larger than 61/142 (43.0\%) purely by
+chance
+
+\section{Question 2}\label{question-2}
+
+\subsection{2-1}\label{section-4}
+
+\subsection*{Question 2: Normal-approximation check and CI interpretation}
+
+\paragraph{Data and hypotheses.}
+
+At end of induction, the MRD-negativity rate for ponatinib (among
+evaluable samples) was \(x=61\) out of \(n=142\), so
+\(\hat p = x/n = 0.4296\). We test \(H_0: p \le 0.16\) vs
+\(H_A: p>0.16\).
+
+\paragraph{Normal-approximation ``by hand''.}
+
+Under \(H_0\) the standard error is \[
+SE_0=\sqrt{\frac{p_0(1-p_0)}{n}}
+=\sqrt{\frac{0.16\times0.84}{142}}
+\approx 0.0305.
+\] The z statistic is \[
+z=\frac{\hat p-p_0}{SE_0}
+=\frac{0.4296-0.16}{0.0305}
+\approx 8.76.
+\] The one-sided p-value is \[
+p = \Pr(Z\ge 8.76)\approx 8.5\times 10^{-19},
+\] which is far below 0.05; thus we reject \(H_0\).
+
+\paragraph{Confidence intervals.}
+
+The one-sided 95\% confidence interval from the one-sided test is
+\([L,1]\) with \(L\approx 0.363\), meaning the true proportion is at
+least 36.3\% with 95\% confidence. A two-sided confidence interval with
+\(\texttt{conf.level}=0.90\) yields the \emph{same} lower bound \(L\)
+(95\% one-sided \(\leftrightarrow\) 90\% two-sided).
+
+\paragraph{Conclusion.}
+
+The normal-approximation reproduces the function output: ponatinib's
+MRD-negativity rate (61/142 = 43.0\%) is significantly greater than
+16\%.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{x  }\OtherTok{\textless{}{-}} \DecValTok{61}
+\NormalTok{n  }\OtherTok{\textless{}{-}} \DecValTok{142}
+\NormalTok{p0 }\OtherTok{\textless{}{-}} \FloatTok{0.16}
+
+\CommentTok{\# Function result (reference)}
+\FunctionTok{prop.test}\NormalTok{(x, n, }\AttributeTok{p =}\NormalTok{ p0, }\AttributeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\AttributeTok{correct =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  1-sample proportions test without continuity correction
+## 
+## data:  x out of n, null probability p0
+## X-squared = 76.781, df = 1, p-value < 2.2e-16
+## alternative hypothesis: true p is greater than 0.16
+## 95 percent confidence interval:
+##  0.3631946 1.0000000
+## sample estimates:
+##         p 
+## 0.4295775
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Hand calculation with normal approximation}
+\NormalTok{phat }\OtherTok{\textless{}{-}}\NormalTok{ x }\SpecialCharTok{/}\NormalTok{ n}
+\NormalTok{se0  }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(p0 }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ p0) }\SpecialCharTok{/}\NormalTok{ n)}
+\NormalTok{z    }\OtherTok{\textless{}{-}}\NormalTok{ (phat }\SpecialCharTok{{-}}\NormalTok{ p0) }\SpecialCharTok{/}\NormalTok{ se0}
+\NormalTok{p\_one }\OtherTok{\textless{}{-}} \DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{pnorm}\NormalTok{(z)}
+\FunctionTok{c}\NormalTok{(}\AttributeTok{phat =}\NormalTok{ phat, }\AttributeTok{z =}\NormalTok{ z, }\AttributeTok{p\_one\_sided =}\NormalTok{ p\_one)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        phat           z p_one_sided 
+##   0.4295775   8.7625018   0.0000000
+\end{verbatim}
+
+``\hat p'' = 0.4296, z'' \approx 8.76``, one-sided
+p''\approx 8.5\times10\^{}\{-19\}``. These match the direction and
+magnitude of prop.test (extremely small p), confirming the function's
+output.
+
+\subsection{2-2}\label{section-5}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# One{-}sided 95\% lower confidence bound (since alternative="greater")}
+\NormalTok{x  }\OtherTok{\textless{}{-}} \DecValTok{61}
+\NormalTok{n  }\OtherTok{\textless{}{-}} \DecValTok{142}
+\NormalTok{p0 }\OtherTok{\textless{}{-}} \FloatTok{0.16}
+
+\NormalTok{ci\_one }\OtherTok{\textless{}{-}} \FunctionTok{prop.test}\NormalTok{(x, n, }\AttributeTok{p =}\NormalTok{ p0, }\AttributeTok{alternative =} \StringTok{"greater"}\NormalTok{, }\AttributeTok{correct =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{$}\NormalTok{conf.int}
+\NormalTok{ci\_one  }\CommentTok{\# returns [lower, 1]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.3631946 1.0000000
+## attr(,"conf.level")
+## [1] 0.95
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Two{-}sided CI with conf.level = 0.90 → same lower bound as the 95\% one{-}sided CI}
+\NormalTok{ci\_two }\OtherTok{\textless{}{-}} \FunctionTok{prop.test}\NormalTok{(x, n, }\AttributeTok{conf.level =} \FloatTok{0.90}\NormalTok{, }\AttributeTok{correct =} \ConstantTok{FALSE}\NormalTok{)}\SpecialCharTok{$}\NormalTok{conf.int}
+\NormalTok{ci\_two  }\CommentTok{\# [lower, upper]; lower ≈ ci\_one[1]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.3631946 0.4985937
+## attr(,"conf.level")
+## [1] 0.9
+\end{verbatim}
+
+The one-sided 95\% CI reports only a lower bound (about 0.363): with
+95\% confidence, the true MRD-negativity rate is at least
+\textasciitilde36\%. Setting a two-sided CI to 90\% reproduces the same
+lower bound (because 95\% one-sided ↔ 90\% two-sided).
+
+\section{Question 3}\label{question-3}
+
+Using raw data (first-generation TKI) allows for individual-level
+analysis, consistent outcome definitions, and control of confounders,
+but may be limited by smaller sample size and representativeness.
+
+Using summary results from the literature (second-generation TKI)
+provides a quick, often larger comparison group, but risks
+inconsistencies in measurement, selection bias, and lack of confounder
+adjustment. These differences may introduce biases such as selection
+bias, information bias, confounding, and temporal bias.
+
+\section{Question 4}\label{question-4}
+
+\subsection{4-1}\label{section-6}
+
+It makes more sense to perform a two-sided test, because we are
+interested in whether the imatinib MRD-negativity rate is different from
+16\% (the historical benchmark for second-generation TKIs). Both higher
+and lower values would matter in assessing whether imatinib is an
+appropriate control.
+
+\subsection{4-2}\label{section-7}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{prop.test}\NormalTok{(}\DecValTok{15}\NormalTok{, }\DecValTok{68}\NormalTok{, }\AttributeTok{p =} \FloatTok{0.16}\NormalTok{,}
+          \AttributeTok{alternative =} \StringTok{"two.sided"}\NormalTok{, }\AttributeTok{correct =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  1-sample proportions test without continuity correction
+## 
+## data:  15 out of 68, null probability 0.16
+## X-squared = 1.8573, df = 1, p-value = 0.1729
+## alternative hypothesis: true p is not equal to 0.16
+## 95 percent confidence interval:
+##  0.1384901 0.3325674
+## sample estimates:
+##         p 
+## 0.2205882
+\end{verbatim}
+
+• Observed proportion: \hat p = 15/68 = 0.221 (22.1\%) • Null value:
+0.16 • Test statistic: z \approx 1.36 • Two-sided p-value ≈ 0.17
+
+Interpretation: Since p ≈ 0.17 is much larger than 0.05, we do not
+reject H₀. The imatinib MRD-negativity rate (22.1\%) is not
+significantly different from the historical 16\%. This suggests that
+imatinib can be considered an appropriate control consistent with
+earlier-generation drugs.
+
+\section{Question 5}\label{question-5}
+
+\subsection{5-1}\label{section-8}
+
+The total sample size for this test is n = 13, and the observed sample
+proportion is \hat p = 6/13 \approx 0.462.
+
+\subsection{5-2}\label{section-9}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{dbinom}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\DecValTok{13}\NormalTok{, }\DecValTok{13}\NormalTok{, }\FloatTok{0.25}\NormalTok{)           }\CommentTok{\# probability distribution for X=0,…,13}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 2.375726e-02 1.029481e-01 2.058963e-01 2.516510e-01 2.097092e-01
+##  [6] 1.258255e-01 5.592245e-02 1.864082e-02 4.660204e-03 8.630008e-04
+## [11] 1.150668e-04 1.046062e-05 5.811453e-07 1.490116e-08
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{dbinom}\NormalTok{(}\DecValTok{0}\SpecialCharTok{:}\DecValTok{13}\NormalTok{, }\DecValTok{13}\NormalTok{, }\FloatTok{0.25}\NormalTok{))      }\CommentTok{\# should equal 1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+
+The distribution gives the probabilities of 0--13 events when X
+\sim Binomial(13,0.25). The sum of probabilities is 1, confirming it is
+a valid probability distribution.
+
+\subsection{5-3}\label{section-10}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sum}\NormalTok{(}\FunctionTok{dbinom}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{6}\SpecialCharTok{:}\DecValTok{13}\NormalTok{), }\DecValTok{13}\NormalTok{, }\FloatTok{0.25}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1039699
+\end{verbatim}
+
+By summing the probabilities of outcomes as or more extreme than 6, the
+two-sided p-value is ≈ 0.104.
+
+\subsection{5-4}\label{section-11}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{binom.test}\NormalTok{(}\DecValTok{6}\NormalTok{, }\DecValTok{13}\NormalTok{, }\AttributeTok{p =} \FloatTok{0.25}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Exact binomial test
+## 
+## data:  6 and 13
+## number of successes = 6, number of trials = 13, p-value = 0.104
+## alternative hypothesis: true probability of success is not equal to 0.25
+## 95 percent confidence interval:
+##  0.1922324 0.7486545
+## sample estimates:
+## probability of success 
+##              0.4615385
+\end{verbatim}
+
+The exact binomial test gives a two-sided p-value = 0.104, a 95\%
+confidence interval of approximately (0.192, 0.749), and a sample
+estimate of p̂ = 0.462. This matches the manual calculation above.
+
+\end{document}

@@ -1,0 +1,53 @@
+---
+title: "q7"
+author: "Jiaqi Wang"
+date: "2025-09-26"
+output: html_document
+---
+
+```{r}
+set.seed(10932)
+
+z <- rnorm(100)          
+q1 <- sum(z^2)          
+q1
+cat("Method 1 (sum of squared normals):", q1, "\n")
+
+q2 <- rchisq(1, df=100)  
+q2                     
+cat("Method 2 (rchisq df=100):", q2, "\n")
+
+N <- 10000
+
+q1_sim <- replicate(N, sum(rnorm(100)^2))
+
+q2_sim <- rchisq(N, df=100)
+
+hist(q1_sim, breaks=50, col=rgb(1,0,0,0.5),
+     main="Comparison: Method1 vs Method2 (Chi-square df=100)",
+     xlab="Value", freq=FALSE)
+hist(q2_sim, breaks=50, col=rgb(0,0,1,0.5), add=TRUE, freq=FALSE)
+
+legend("topright", legend=c("Method1: sum(z^2)", "Method2: rchisq"),
+       fill=c(rgb(1,0,0,0.5), rgb(0,0,1,0.5)))
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

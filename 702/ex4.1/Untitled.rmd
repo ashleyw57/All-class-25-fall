@@ -1,0 +1,299 @@
+---
+title: "Answer for EX4.1"
+author: "Jiaqi Wang"
+date: "2025-10-07"
+output:
+   word_document:
+    reference_docx: "my_template.docx"
+---
+# Question 1
+
+## 1-1
+```{r}
+library(dplyr)
+
+ultra <- read.csv(here::here("data","ultrarunning.csv"))
+
+ultra_clean <- ultra %>% 
+  select(pb100k_dec, teique_sf) %>% 
+  filter(!is.na(pb100k_dec), !is.na(teique_sf))
+
+ultra_clean <- ultra_clean %>% 
+  mutate(intercept = 1)
+
+head(ultra_clean)
+```
+## 1-2
+```{r}
+# Load ggplot2
+library(ggplot2)
+
+# Create the scatter plot with regression line
+ggplot(ultra_clean, 
+       aes(x = teique_sf, y = pb100k_dec)) +
+  geom_point(color = "darkgray", size = 2) +                          # scatter points
+  geom_smooth(method = "lm", color = "blue", lwd = 1.2) + # regression line
+  labs(
+    title = "Personal best 100k times (hours) vs Emotional intelligence score",
+    x = "Emotional intelligence score (TEIQUE-SF)",
+    y = "Personal best 100k time (hours)"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+## 1-3
+```{r}
+#matrix
+Y <- as.matrix(ultra_clean$pb100k_dec)
+X <- as.matrix(ultra_clean[, c("intercept", "teique_sf")])
+```
+
+## 1-4
+```{r}
+#caculate beta
+Beta <- solve(t(X) %*% X) %*% t(X) %*% Y
+Beta
+```
+$\hat{\beta}_0 = 11.03$: predicted 100k time when EI = 0
+$\hat{\beta}_1 = 0.71$: for each one-unit increase in EI score, average time increases by 0.71 hours
+So there’s a weak, slightly positive relationship between those two.
+
+# Question 2
+## 2-1
+```{r}
+lm_obj <- lm(pb100k_dec ~ teique_sf, data = ultra_clean)
+sum_lm <- summary(lm_obj)
+sum_lm
+
+beta_df <- setNames(as.numeric(Beta), c("intercept","teique_sf"))
+beta_df
+coef(lm_obj)
+all.equal(unname(beta_df), unname(coef(lm_obj)))
+```
+Summary(lm_obj) prints the parameter estimates, t-tests, p-values, and R².
+Both methods (matrix vs. lm()) give identical estimates.
+
+## 2-2
+```{r}
+nm <- names(lm_obj)
+nm
+length(nm)
+```
+There are 12 components in the lm_obj.
+
+## 2-3
+```{r}
+lm_obj$coefficients
+```
+These are the estimates $\hat{\beta}_0$ and $\hat{\beta}_1$.
+The output of lm_obj$coefficients contains the estimated intercept and slope of the regression line — the fitted equation that quantifies how emotional intelligence predicts ultramarathon performance.
+
+## 2-4
+```{r}
+lm_obj$coefficients["teique_sf"]
+```
+This retrieves the slope estimate for $\hat{\beta}_1$.
+
+## 2-5
+```{r}
+Fitted <- lm_obj$fitted.values
+head(Fitted, 5)
+```
+
+## 2-6
+```{r}
+head(predict(lm_obj), 5)
+all.equal(Fitted, predict(lm_obj))
+```
+Output: TRUE. Both give identical results.
+
+## 2-7
+```{r}
+yhat_auto   <- Fitted[1]
+yhat_manual <- 11.03 + 0.71 * 5.73
+c (manual = yhat_manual, auto = yhat_auto)
+```
+The manual and model-based fitted values match exactly.
+
+
+# Question 3
+## 3-1
+```{r}
+Y  <- ultra_clean$pb100k_dec        # observed outcomes
+Yp <- Fitted                        # fitted values from the model
+Ym <- rep(mean(Y), length(Y))       # vector of the sample mean
+```
+
+## 3-2
+```{r}
+SST <- sum( (Y - Ym)^2 )
+SST
+```
+
+## 3-3
+```{r}
+SSE <- sum( (Y - Yp)^2 )
+SSE
+```
+
+## 3-4
+```{r}
+SSR <- sum( (Yp - Ym)^2 )
+SSR
+```
+
+## 3-5
+```{r}
+c(SST = SST, SSR = SSR, SSE = SSE)
+all.equal(SST, SSR + SSE)
+```
+SST = SSR + SSE
+
+## 3-6
+```{r}
+an <- anova(lm_obj)
+an
+# Compare to your hand-calculated values:
+SSR_anova <- an[1, "Sum Sq"]     # regression SS (for teique_sf)
+SSE_anova <- an[2, "Sum Sq"]     # residual SS
+
+c(Hand_SSR = SSR, ANOVA_SSR = SSR_anova,
+  Hand_SSE = SSE, ANOVA_SSE = SSE_anova)
+
+all.equal(SSR, SSR_anova)  # should be TRUE (up to tiny rounding)
+all.equal(SSE, SSE_anova)  # should be TRUE (up to tiny rounding)
+```
+I obtain the same sums of squares by anova() and hand-caculating.
+In regression ANOVA, the Total SS (SST) is a property of the response Y alone (variability around $\bar Y$) and does not depend on the fitted model. For model comparison and the F-test, we only need the decomposition into model (SSR) and residual (SSE) plus their df to compute
+F = $\frac{\text{MSR}}{\text{MSE}} = \frac{\text{SSR}/1}{\text{SSE}/(n-2)}$.
+Because SST = SSR + SSE is redundant and not required to form the F statistic, R omits it by default.
+
+## 3-7
+```{r}
+# SST = SSR + SSE; both are in `an`:
+SST_from_anova <- sum(an[ , "Sum Sq"])
+SST_from_anova
+all.equal(SST_from_anova, SST)   # should be TRUE
+```
+
+# Question 4
+## 4-1
+```{r}
+v <- vcov(lm_obj)
+v
+var_b1 <- v["teique_sf","teique_sf"]
+var_b1
+se_b1_vcov <- sqrt(var_b1)      #square root of the variance of /beta1
+se_b1_vcov
+se_b1_summary <- summary(lm_obj)$coefficients[2, 2] 
+c(var_b1 = var_b1, 
+  se_from_vcov = se_b1_vcov,
+  se_from_summary = se_b1_summary)
+```
+The diagonal elements are variances:
+Var(β₀) = 2.99897
+Var(β₁) = 0.11211
+The off-diagonal elements are covariances between β₀ and β₁.
+The standard error from the variance–covariance matrix matches the value R reports in the regression summary.
+
+## 4-2
+```{r}
+# Inputs from earlier steps:
+# lm_obj <- lm(pb100k_dec ~ teique_sf, data = ultra_clean)
+
+# Vectors
+Y  <- ultra_clean$pb100k_dec
+X  <- ultra_clean$teique_sf
+Yp <- lm_obj$fitted.values
+n  <- length(Y)
+
+# Pieces of the formula
+SSE  <- sum( (Y - Yp)^2 )                # residual sum of squares
+SSXX <- sum( (X - mean(X))^2 )           # sum of squares of X about its mean
+MSE  <- SSE / (n - 2)                    # mean squared error
+
+# Algebraic variance and SE for beta1
+var_b1_alg <- MSE / SSXX
+se_b1_alg  <- sqrt(var_b1_alg)
+
+# Compare to previous results
+var_b1_vcov <- vcov(lm_obj)["teique_sf","teique_sf"]
+se_b1_vcov  <- sqrt(var_b1_vcov)
+se_b1_summ  <- summary(lm_obj)$coefficients[2,2]
+
+c(var_b1_alg = var_b1_alg,
+  var_b1_vcov = var_b1_vcov,
+  se_b1_alg   = se_b1_alg,
+  se_b1_vcov  = se_b1_vcov,
+  se_b1_summ  = se_b1_summ)
+```
+As shown above:
+var_b1_alg ≈ var_b1_vcov
+se_b1_alg  ≈ se_b1_vcov ≈ se_b1_summ
+That confirms the algebraic formula gives the same SE(β₁) as vcov() and summary(lm_obj).
+
+## 4-3
+The numerator $\sum_i (Y_i - \hat{Y}_i)^2$ is the residual sum of squares (SSE), which measures how far the observed data points are from the fitted regression line. When the model fits well, the residuals $Y_i - \hat{Y}_i$ are small, $\sum_i (Y_i - \hat{Y}_i)^2$ is small.
+
+## 4-4
+$\sum_i (X_i-\bar X)^2$ is large when the predictor values X are widely spread out around their mean (high variance of X); it is small when the $X_i$ cluster near $\bar X$.
+Because 
+$\mathrm{SE}(\hat\beta_1)=\sqrt{\frac{\mathrm{SSE}/(n-2)}{\mathrm{SS}{XX}}}$,
+you want a small numerator (good fit / small residuals) and a large $\mathrm{SS}{XX}$.
+
+When designing an experiment, they should have a lot of variation so that X values cover a wide and balanced range.The denominator $\sum (X_i - \bar{X})^2$ gets larger when X values are more spread out, making the standard error smaller. This yields a more precise and reliable slope estimate.
+
+# Question5
+## 5-1
+```{r}
+n   <- nrow(ultra_clean)
+b1  <- coef(lm_obj)[["teique_sf"]]
+se1 <- summary(lm_obj)$coefficients["teique_sf","Std. Error"]
+tval <- b1 / se1
+df   <- n - 2
+p_t  <- 2 * pt(abs(tval), df, lower.tail = FALSE)
+
+c(b1 = b1, se1 = se1, t = tval, df = df, p_value = p_t)
+summary(lm_obj)$coefficients["teique_sf", c("t value","Pr(>|t|)")]
+```
+The hand-caculated t matches the one from lm().
+
+## 5-2
+```{r}
+Y  <- ultra_clean$pb100k_dec
+Yp <- lm_obj$fitted.values
+
+SSR <- sum( (Yp - mean(Y))^2 )
+SSE <- sum( (Y - Yp)^2 )
+MSR <- SSR / 1
+MSE <- SSE / (n - 2)
+
+Fval <- MSR / MSE
+p_F  <- pf(Fval, df1 = 1, df2 = n - 2, lower.tail = FALSE)
+
+c(SSR = SSR, SSE = SSE, MSR = MSR, MSE = MSE, F = Fval, p_value = p_F)
+anova(lm_obj)
+```
+The hand-caculated F matches the one from anova().
+
+## 5-3
+```{r}
+tval <- summary(lm_obj)$coefficients["teique_sf", "t value"]
+Fval <- anova(lm_obj)[1, "F value"]
+
+c(t_value = tval,
+  t_squared = tval^2,
+  F_value = Fval)
+```
+
+The F-statistic is the square of t-statistic.
+
+## 5-4
+At α = 0.05, there is statistically significant evidence (p = 0.036) that emotional intelligence affects ultramarathon times.
+The estimated slope (0.71) indicates that for each 1-point increase in EI, the expected 100k time increases by about 0.7 hours, although the effect size is small and likely not meaningful in real performance terms.
+
+## 5-5
+Although the relationship between emotional intelligence and ultramarathon time is statistically significant (p = 0.036), the magnitude of the effect is very small.
+The estimated slope ($\hat{\beta}_1$ = 0.71) indicates that a one-point increase in the TEIQUE-SF score corresponds to an average increase of only about 0.7 hours (≈ 43 minutes) in the 100k finishing time.
+Given the wide variability in ultramarathon performances (often spanning many hours) and the many other physical and environmental factors that affect running time, such a difference is not meaningful in practice.
+Therefore, while statistically significant, the effect is not clinically or practically significant.

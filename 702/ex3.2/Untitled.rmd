@@ -1,0 +1,146 @@
+---
+title: "answer for ex3.2"
+author: "Jiaqi Wang"
+date: "2025-10-02"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+# Question 1
+## 1-1
+That's because in this problem, we need to evaluate whether the MRD-negative complete remission rate at the end of the induction with ponatinib is significantly greater than the previously reported rate for second-generation tyrosine kinase inhibitors. That means testing whether the MRD negativity rate is greater than 16%. From a clinical perspective, the result of equivalence or inferiorty would not alter treatment, so we just need to test whether this treatment is a better one. Accordingly, a one-sided one-sample proportion test is the most appropriate statistical procedure, as we are only intererted in treatment improvement.
+
+## 1-2
+The MRD-negative complete remission rate at the end of induction for ponatinib was 43.0% (61/142). 
+
+## 1-3
+```{r}
+prop.test(61, 142, 
+          p = 0.16, 
+          alternative = "greater", 
+          correct = FALSE)
+```
+
+Using a one-sided one-sample proportion test without continuity correction (H₀: π ≤ 0.16), we obtain z≈8.76 and one-sided "p≈9.6\times10^{-19}". We reject H₀ and conclude that the MRD-negativity rate (61/142 = 43.0%) is significantly greater than 16%.
+
+## 1-4
+In this context, the one-sided p-value is the probability, under the null hypothesis that the true MRD-negativity rate is 16%, of observing a sample proportion as large as or larger than 61/142 (43.0%) purely by chance
+
+# Question 2
+## 2-1
+\subsection*{Question 2: Normal-approximation check and CI interpretation}
+
+\paragraph{Data and hypotheses.}
+At end of induction, the MRD-negativity rate for ponatinib (among evaluable samples) was
+\(x=61\) out of \(n=142\), so \(\hat p = x/n = 0.4296\).
+We test \(H_0: p \le 0.16\) vs \(H_A: p>0.16\).
+
+\paragraph{Normal-approximation ``by hand''.}
+Under \(H_0\) the standard error is
+\[
+SE_0=\sqrt{\frac{p_0(1-p_0)}{n}}
+=\sqrt{\frac{0.16\times0.84}{142}}
+\approx 0.0305.
+\]
+The z statistic is
+\[
+z=\frac{\hat p-p_0}{SE_0}
+=\frac{0.4296-0.16}{0.0305}
+\approx 8.76.
+\]
+The one-sided p-value is
+\[
+p = \Pr(Z\ge 8.76)\approx 8.5\times 10^{-19},
+\]
+which is far below 0.05; thus we reject \(H_0\).
+
+\paragraph{Confidence intervals.}
+The one-sided 95\% confidence interval from the one-sided test is \([L,1]\) with
+\(L\approx 0.363\), meaning the true proportion is at least 36.3\% with 95\% confidence.
+A two-sided confidence interval with \(\texttt{conf.level}=0.90\) yields the \emph{same}
+lower bound \(L\) (95\% one-sided \(\leftrightarrow\) 90\% two-sided).
+
+\paragraph{Conclusion.}
+The normal-approximation reproduces the function output: ponatinib's MRD-negativity rate
+(61/142 = 43.0\%) is significantly greater than 16\%.
+```{r}
+x  <- 61
+n  <- 142
+p0 <- 0.16
+
+# Function result (reference)
+prop.test(x, n, p = p0, alternative = "greater", correct = FALSE)
+
+# Hand calculation with normal approximation
+phat <- x / n
+se0  <- sqrt(p0 * (1 - p0) / n)
+z    <- (phat - p0) / se0
+p_one <- 1 - pnorm(z)
+c(phat = phat, z = z, p_one_sided = p_one)
+```
+"\hat p" = 0.4296, z" \approx 8.76", one-sided p "\approx 8.5\times10^{-19}".
+These match the direction and magnitude of prop.test (extremely small p), confirming the function’s output.
+
+## 2-2
+```{r}
+# One-sided 95% lower confidence bound (since alternative="greater")
+x  <- 61
+n  <- 142
+p0 <- 0.16
+
+ci_one <- prop.test(x, n, p = p0, alternative = "greater", correct = FALSE)$conf.int
+ci_one  # returns [lower, 1]
+
+# Two-sided CI with conf.level = 0.90 → same lower bound as the 95% one-sided CI
+ci_two <- prop.test(x, n, conf.level = 0.90, correct = FALSE)$conf.int
+ci_two  # [lower, upper]; lower ≈ ci_one[1]
+```
+The one-sided 95% CI reports only a lower bound (about 0.363): with 95% confidence, the true MRD-negativity rate is at least ~36%.
+Setting a two-sided CI to 90% reproduces the same lower bound (because 95% one-sided ↔ 90% two-sided).
+
+# Question 3
+Using raw data (first-generation TKI) allows for individual-level analysis, consistent outcome definitions, and control of confounders, but may be limited by smaller sample size and representativeness.
+
+Using summary results from the literature (second-generation TKI) provides a quick, often larger comparison group, but risks inconsistencies in measurement, selection bias, and lack of confounder adjustment. These differences may introduce biases such as selection bias, information bias, confounding, and temporal bias.
+
+# Question 4
+## 4-1
+It makes more sense to perform a two-sided test, because we are interested in whether the imatinib MRD-negativity rate is different from 16% (the historical benchmark for second-generation TKIs). Both higher and lower values would matter in assessing whether imatinib is an appropriate control.
+
+## 4-2
+```{r}
+prop.test(15, 68, p = 0.16,
+          alternative = "two.sided", correct = FALSE)
+```
+  • Observed proportion: \hat p = 15/68 = 0.221 (22.1%)
+	•	Null value: 0.16
+	•	Test statistic: z \approx 1.36
+	•	Two-sided p-value ≈ 0.17
+
+Interpretation:
+Since p ≈ 0.17 is much larger than 0.05, we do not reject H₀. The imatinib MRD-negativity rate (22.1%) is not significantly different from the historical 16%. This suggests that imatinib can be considered an appropriate control consistent with earlier-generation drugs.
+
+
+# Question 5
+## 5-1
+The total sample size for this test is n = 13, and the observed sample proportion is \hat p = 6/13 \approx 0.462.
+
+## 5-2
+```{r}
+dbinom(0:13, 13, 0.25)           # probability distribution for X=0,…,13
+sum(dbinom(0:13, 13, 0.25))      # should equal 1
+```
+The distribution gives the probabilities of 0–13 events when X \sim Binomial(13,0.25). The sum of probabilities is 1, confirming it is a valid probability distribution.
+
+## 5-3
+```{r}
+sum(dbinom(c(0, 6:13), 13, 0.25))
+```
+By summing the probabilities of outcomes as or more extreme than 6, the two-sided p-value is ≈ 0.104.
+
+## 5-4
+```{r}
+binom.test(6, 13, p = 0.25)
+```
+The exact binomial test gives a two-sided p-value = 0.104, a 95% confidence interval of approximately (0.192, 0.749), and a sample estimate of p̂ = 0.462. This matches the manual calculation above.

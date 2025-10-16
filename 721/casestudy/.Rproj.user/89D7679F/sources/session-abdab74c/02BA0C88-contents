@@ -1,0 +1,13 @@
+###Q 1
+
+B0  = 2
+B1 = 0.5
+sigma = 1
+n = 100
+
+set.seed(1)
+
+datal = data.frame(
+  x = 1:100
+) %>% 
+  

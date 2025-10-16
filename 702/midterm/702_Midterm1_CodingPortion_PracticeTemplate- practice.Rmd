@@ -1,0 +1,202 @@
+---
+title: "BIOSTAT702 Midterm 1 -- Coding Portion"
+subtitle: "Practice Template"
+author: "INSERT YOUR NAME HERE"
+date: "2025-10-09"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**By submitting an exam, you are formally agreeing to the terms below and acknowledging that you have neither given nor received unauthorized aid in the completion of the exam.**
+
+## Instructions
+
+For the following set of tasks, you will be using the Hypoxia Dataset. Start by reading the Hypoxia Data Dictionary and Dataset Introduction. Optionally, you can also look at the Hypoxia Paper. 
+
+Type your answers and code where prompted. When you are done, click the knit button (knitting needle!) at the top of the Rstudio screen. It should create an .html file which will be your submission file to Canvas. 
+
+For this portion of the midterm, you may use any technology resources available to you, including notes, exercises, Internet searches, generative AI tools, etc. However, please be aware that you must submit answers to the questions written in your own words. This means that you should not quote phrases from other sources, including AI tools, even with proper attribution. This portion of the midterm must be done independently, without human assistance. **This portion of the exam is worth 30 points. Each question will be worth 5 points.**
+
+## Load in the Dataset 
+
+```{r}
+# the csv file MUST be in the same folder as this Rmd file in order for this code to run properly as is.
+Hypoxia = read.csv("hypoxia.csv")
+```
+
+```{r}
+# 只用到课堂常用包
+library(dplyr)
+library(ggplot2)
+library(moments)  # 只为计算 skewness
+```
+
+```{r}
+# 查看列名，确认与题目中引用一致（含空格的用反引号引用）
+names(hypoxia)
+```
+
+```{r}
+# 关键变量：TWA MAP / Min Sao2
+hypoxia$included <- ifelse(is.na(hypoxia$`TWA MAP`) | is.na(hypoxia$`Min Sao2`), 0, 1)
+
+# 两组人数
+table(hypoxia$included, useNA = "ifany")
+
+# 分组描述（均值、比例）
+desc_by_included <- hypoxia %>%
+  group_by(included) %>%
+  summarise(
+    n = n(),
+    mean_age = mean(Age, na.rm = TRUE),
+    female_pct = mean(Female == 1, na.rm = TRUE),
+    mean_duration_surg = mean(`Duration of Surg`, na.rm = TRUE)
+  )
+desc_by_included
+```
+```{r}
+# 直方图 + 核密度
+ggplot(hypoxia, aes(x = `TWA MAP`)) +
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "grey", color = "black") +
+  geom_density(color = "blue", size = 1) +
+  labs(x = "TWA of MAP (mmHg)", y = "Density",
+       title = "Distribution of TWA MAP")
+
+# 偏度
+twa_skew <- moments::skewness(hypoxia$`TWA MAP`, na.rm = TRUE)
+twa_skew
+
+# Q-Q 图
+ggplot(hypoxia, aes(sample = `TWA MAP`)) +
+  stat_qq(size = 1.5) + stat_qq_line() +
+  labs(title = "Normal Q-Q Plot for TWA MAP")
+```
+
+```{r}
+tt_out <- t.test(hypoxia$`TWA MAP`, mu = 87)
+tt_out
+
+# 拿出主要量用于报告
+mean_twa <- mean(hypoxia$`TWA MAP`, na.rm = TRUE)
+ci_twa   <- tt_out$conf.int
+p_twa    <- tt_out$p.value
+
+cat(sprintf("Mean TWA-MAP = %.2f mmHg (95%% CI: %.2f, %.2f), p = %.4f\n",
+            mean_twa, ci_twa[1], ci_twa[2], p_twa))
+```
+
+```{r}
+fit_simple <- lm(`TWA MAP` ~ `Min Sao2`, data = hypoxia)
+summary(fit_simple)
+confint(fit_simple)
+
+# 斜率 β1
+b1 <- coef(fit_simple)[["`Min Sao2`"]]
+
+# SaO2 下降 5% 对 MAP 的影响（单位：mmHg）
+delta5 <- (-5) * b1
+cat(sprintf("If Min SaO2 decreases by 5%%, expected change in TWA-MAP ≈ %.2f mmHg.\n", delta5))
+
+# 可视化：散点 + 回归线
+ggplot(hypoxia, aes(x = `Min Sao2`, y = `TWA MAP`)) +
+  geom_point(color = "darkgray") +
+  geom_smooth(method = "lm", se = TRUE, color = "blue") +
+  labs(x = expression("Minimum nocturnal " ~ SaO[2] ~ " (%)"),
+       y = "TWA of MAP (mmHg)",
+       title = "Simple Linear Regression: Min SaO2 vs TWA MAP")
+```
+
+```{r}
+# 模型1：仅 Min Sao2
+fit1 <- lm(`TWA MAP` ~ `Min Sao2`, data = hypoxia)
+
+# 模型2：加入常见协变量（Age, BMI, Female）
+# Female 是 0/1，保留原始编码即可（也可转因子：factor(Female)）
+fit2 <- lm(`TWA MAP` ~ `Min Sao2` + Age + BMI + Female, data = hypoxia)
+
+anova(fit1, fit2)   # 嵌套模型 F 检验
+summary(fit2)$fstatistic  # 整体 F 与 df
+```
+
+```{r}
+# 确认 Vasopressor 存在且是 0/1（如是 "Yes/No" 可先转 0/1）
+table(hypoxia$Vasopressor, useNA = "ifany")
+
+fit_logit <- glm(Vasopressor ~ `Min Sao2` + Age + BMI + Female,
+                 data = hypoxia, family = binomial)
+
+summary(fit_logit)
+
+# OR 与 95% CI（Wald法）
+coefs <- summary(fit_logit)$coefficients
+OR    <- exp(coefs[, "Estimate"])
+LCL   <- exp(coefs[, "Estimate"] - 1.96 * coefs[, "Std. Error"])
+UCL   <- exp(coefs[, "Estimate"] + 1.96 * coefs[, "Std. Error"])
+out_or <- data.frame(OR = OR, LCL = LCL, UCL = UCL, p = coefs[, "Pr(>|z|)"])
+out_or
+```
+
+## Question 1
+
+### REDACTED
+
+WRITE YOUR ANSWER HERE.
+
+
+## Question 2
+
+### REDACTED
+
+
+WRITE YOUR ANSWER HERE.
+
+
+## Question 3
+
+### REDACTED 
+
+WRITE YOUR ANSWER HERE
+
+```{r}
+# CODE HERE -- press the green arrow to run all the code in this "chunk"
+```
+
+
+## Question 4
+
+### REDACTED
+
+```{r}
+# CODE HERE 
+```
+
+## Question 5
+
+### REDACTED
+
+```{r}
+# CODE HERE 
+```
+
+## Question 6 
+
+### REDACTED
+
+WRITE ANSWER HERE. 
+
+```{r}
+# CODE HERE  
+```
+
+
+
+
+
+
+
+
+
+

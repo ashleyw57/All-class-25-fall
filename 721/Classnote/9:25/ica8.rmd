@@ -1,0 +1,263 @@
+---
+title: "in class activity 8"
+author: "Jiaqi Wang"
+date: "2025-09-25"
+output: html_document
+---
+### METHOD 1 : kable
+```{r}
+# ---- Load package ---
+library(dplyr)
+library(tidyr)
+library(palmerpenguins)
+library(knitr)
+
+# ---- Load and prepare data ----
+data(penguins)
+
+# Remove rows with missing data for cleaner comparison
+penguins_clean <- penguins %>%
+  filter(!is.na(sex),
+         !is.na(bill_length_mm),
+         !is.na(bill_depth_mm),
+         !is.na(body_mass_g))
+
+# Preview the data
+glimpse(penguins_clean)
+
+# ---- Create overall summary ----
+overall_summary <- penguins_clean %>%
+  summarise(
+    species = "Overall",
+    N = n(),
+    `Bill Length (mm)` = paste0(round(mean(bill_length_mm), 1), " (",
+                                round(sd(bill_length_mm), 1), ")"),
+    `Bill Depth (mm)` = paste0(round(mean(bill_depth_mm), 1), " (",
+                               round(sd(bill_depth_mm), 1), ")"),
+    `Body Mass (g)` = paste0(round(mean(body_mass_g), 0), " (",
+                             round(sd(body_mass_g), 0), ")"),
+    `Female (%)` = paste0(sum(sex == "female"), " (",
+                          round(100*sum(sex=="female")/n(), 1), ")"),
+    `Male (%)` = paste0(sum(sex == "male"), " (",
+                        round(100*sum(sex=="male")/n(), 1), ")")
+  )
+
+# ---- Create summary by species ----
+summary_by_species <- penguins_clean %>%
+  group_by(species) %>%
+  summarise(
+    N = n(),
+    `Bill Length (mm)` = paste0(round(mean(bill_length_mm), 1), " (",
+                                round(sd(bill_length_mm), 1), ")"),
+    `Bill Depth (mm)` = paste0(round(mean(bill_depth_mm), 1), " (",
+                               round(sd(bill_depth_mm), 1), ")"),
+    `Body Mass (g)` = paste0(round(mean(body_mass_g), 0), " (",
+                             round(sd(body_mass_g), 0), ")"),
+    `Female (%)` = paste0(sum(sex == "female"), " (",
+                          round(100*sum(sex=="female")/n(), 1), ")"),
+    `Male (%)` = paste0(sum(sex == "male"), " (",
+                        round(100*sum(sex=="male")/n(), 1), ")"),
+    .groups = "drop"
+  )
+
+# ---- Combine and transpose ----
+summary_stats <- bind_rows(overall_summary, summary_by_species)
+
+# Create column names (species names)
+column_names <- c("Variable", summary_stats$species)
+
+# Transpose: make species columns, variables rows
+summary_transposed <- summary_stats %>%
+  select(-species) %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable")
+
+colnames(summary_transposed) <- column_names
+
+# ---- Create kable table ----
+kable_table <- summary_transposed %>%
+  kable(caption = "Table 1. Baseline Characteristics by Penguin Species",
+        row.names = FALSE)
+
+kable_table
+```
+
+### METHOD 2: gt
+```{r}
+library(gt)
+summary_transposed %>%
+  gt() %>%
+  tab_header(title = "Table 1. Baseline Characteristics by Penguin Species")
+```
+
+### METHOD 3: gtsummary
+```{r}
+library(gtsummary)
+
+gtsummary_table <- penguins_clean %>%
+  select(species, bill_length_mm, bill_depth_mm, body_mass_g, sex) %>%
+  tbl_summary(
+    by = species,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    )
+  ) %>%
+  add_overall() %>%
+  modify_header(label ~ "**Variable**") %>%
+  modify_caption("**Table 1. Baseline Characteristics by Penguin Species**")
+
+gtsummary_table
+```
+
+1. Which package was easiest to use?
+The gtsummary package was the easiest to use. With a single call to tbl_summary(), it automatically produces a professional Table 1 that includes means, standard deviations, counts, and percentages. It also allows the addition of an overall column and p-values with minimal extra code.
+
+2. Which package produced the most professional output?
+The gt package produced the most professional-looking tables. Its design is publication-ready and highly customizable in terms of fonts, alignment, headers, footnotes, and export options.
+
+3. Which package gave the most control over formatting?
+The combination of manual summarization + kable provided the most control over formatting because every number and label was calculated and arranged by hand. However, this also means it is the most time-consuming approach. Among the table-focused packages, gt provides the broadest set of formatting tools.
+
+4. Which package would you use for quick exploratory analysis?
+For quick exploratory analysis, gtsummary or kable are best. gtsummary is ideal when you need descriptive statistics quickly, while kable is very lightweight for simply displaying data frames during initial data exploration.
+
+### key for METHOD 1 : kable
+```{r}
+# Summary by species
+summary_by_species <- penguins_clean %>%
+  group_by(species) %>%
+  summarise(
+    N = n(),
+    `Bill Length (mm)` = paste0(round(mean(bill_length_mm), 1), " (",
+                                round(sd(bill_length_mm), 1), ")"),
+    `Bill Depth (mm)`  = paste0(round(mean(bill_depth_mm), 1), " (",
+                                round(sd(bill_depth_mm), 1), ")"),
+    `Body Mass (g)`    = paste0(round(mean(body_mass_g), 0), " (",
+                                round(sd(body_mass_g), 0), ")"),
+    `Female (%)`       = paste0(sum(sex == "female"), " (",
+                                round(100 * sum(sex == "female") / n(), 1), ")"),
+    `Male (%)`         = paste0(sum(sex == "male"), " (",
+                                round(100 * sum(sex == "male") / n(), 1), ")")
+  )
+
+# Overall summary
+overall_summary <- penguins_clean %>%
+  summarise(
+    species = "Overall",
+    N = n(),
+    `Bill Length (mm)` = paste0(round(mean(bill_length_mm), 1), " (",
+                                round(sd(bill_length_mm), 1), ")"),
+    `Bill Depth (mm)`  = paste0(round(mean(bill_depth_mm), 1), " (",
+                                round(sd(bill_depth_mm), 1), ")"),
+    `Body Mass (g)`    = paste0(round(mean(body_mass_g), 0), " (",
+                                round(sd(body_mass_g), 0), ")"),
+    `Female (%)`       = paste0(sum(sex == "female"), " (",
+                                round(100 * sum(sex == "female") / n(), 1), ")"),
+    `Male (%)`         = paste0(sum(sex == "male"), " (",
+                                round(100 * sum(sex == "male") / n(), 1), ")")
+  )
+
+# Combine & transpose
+summary_stats <- bind_rows(overall_summary, summary_by_species)
+column_names <- c("Variable", summary_stats$species)
+
+summary_transposed <- summary_stats %>%
+  select(-species) %>%
+  t() %>%
+  as.data.frame() %>%
+  tibble::rownames_to_column(var = "Variable")
+
+colnames(summary_transposed) <- column_names
+
+# Table with kable
+summary_transposed %>%
+  knitr::kable(caption = "Table 1. Baseline Characteristics by Penguin Species",
+               row.names = FALSE)
+```
+
+### key for METHOD 2: gt
+```{r}
+library(gt)
+
+gt_table <- summary_transposed %>%
+  gt() %>%
+  tab_header(
+    title = "Baseline Characteristics by Penguin Species",
+    subtitle = "Palmer Station Antarctica LTER Dataset"
+  ) %>%
+  cols_label(
+    Variable  = "Characteristic",
+    Overall   = "Overall",
+    Adelie    = "Adelie",
+    Chinstrap = "Chinstrap",
+    Gentoo    = "Gentoo"
+  ) %>%
+  tab_spanner(
+    label = "Mean (SD)",
+    columns = c(Overall, Adelie, Chinstrap, Gentoo),
+    gather = FALSE
+  ) %>%
+  tab_style(
+    style = list(cell_fill(color = "#f8f9fa"),
+                 cell_text(weight = "bold")),
+    locations = cells_body(columns = Variable)
+  ) %>%
+  tab_style(
+    style = list(cell_fill(color = "#e3f2fd"),
+                 cell_text(weight = "bold")),
+    locations = cells_body(columns = Overall)
+  ) %>%
+  tab_footnote(
+    footnote = "Data represents complete cases only",
+    locations = cells_title(groups = "subtitle")
+  ) %>%
+  tab_options(
+    heading.background.color = "#f8f9fa",
+    column_labels.font.weight = "bold",
+    table.font.size = 12
+  )
+
+gt_table
+```
+
+### key for METHOD 3: gtsummary
+```{r}
+library(gtsummary)
+
+gtsummary_table <- penguins_clean %>%
+  select(species, bill_length_mm, bill_depth_mm, body_mass_g, sex) %>%
+  tbl_summary(
+    by = species,
+    statistic = list(
+      all_continuous() ~ "{mean} ({sd})",
+      all_categorical() ~ "{n} ({p}%)"
+    ),
+    digits = list(
+      bill_length_mm ~ c(1, 1),
+      bill_depth_mm  ~ c(1, 1),
+      body_mass_g    ~ c(0, 0),
+      sex            ~ c(0, 1)
+    ),
+    label = list(
+      bill_length_mm ~ "Bill Length (mm)",
+      bill_depth_mm  ~ "Bill Depth (mm)",
+      body_mass_g    ~ "Body Mass (g)",
+      sex            ~ "Sex"
+    ),
+    missing = "no"
+  ) %>%
+  add_overall(col_label = "**Overall**") %>%
+  modify_header(all_stat_cols() ~ "**{level}**") %>%
+  modify_caption("**Table 1. Baseline Characteristics by Penguin Species**") %>%
+  modify_footnote(
+    all_stat_cols() ~ "Mean (SD) for continuous variables; n (%) for categorical variables"
+  ) %>%
+  modify_footnote(
+    update = all_stat_cols() ~ "Data from Palmer Station Antarctica LTER Dataset",
+    abbreviation = TRUE
+  )
+
+gtsummary_table
+```

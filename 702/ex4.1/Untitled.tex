@@ -1,0 +1,808 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+  \setmainfont[]{Times New Roman}
+  \setmonofont[]{Courier New}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Answer for EX4.1},
+  pdfauthor={Jiaqi Wang},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Answer for EX4.1}
+\author{Jiaqi Wang}
+\date{2025-10-07}
+
+\begin{document}
+\maketitle
+
+\section{Question 1}\label{question-1}
+
+\subsection{1-1}\label{section}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ultra }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(here}\SpecialCharTok{::}\FunctionTok{here}\NormalTok{(}\StringTok{"data"}\NormalTok{,}\StringTok{"ultrarunning.csv"}\NormalTok{))}
+
+\NormalTok{ultra\_clean }\OtherTok{\textless{}{-}}\NormalTok{ ultra }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{select}\NormalTok{(pb100k\_dec, teique\_sf) }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(pb100k\_dec), }\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(teique\_sf))}
+
+\NormalTok{ultra\_clean }\OtherTok{\textless{}{-}}\NormalTok{ ultra\_clean }\SpecialCharTok{\%\textgreater{}\%} 
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{intercept =} \DecValTok{1}\NormalTok{)}
+
+\FunctionTok{head}\NormalTok{(ultra\_clean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   pb100k_dec teique_sf intercept
+## 1       7.60      5.73         1
+## 2      14.20      5.33         1
+## 3      14.33      5.33         1
+## 4      17.00      5.33         1
+## 5      12.00      5.23         1
+## 6      16.00      5.97         1
+\end{verbatim}
+
+\subsection{1-2}\label{section-1}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#scatterplot}
+\FunctionTok{plot}\NormalTok{(ultra\_clean}\SpecialCharTok{$}\NormalTok{teique\_sf, ultra\_clean}\SpecialCharTok{$}\NormalTok{pb100k\_dec,}
+     \AttributeTok{pch =} \DecValTok{19}\NormalTok{, }\AttributeTok{col =} \StringTok{"darkgray"}\NormalTok{,}
+     \AttributeTok{main =} \StringTok{"Personal best 100k times in hour vs Emotional intelligence score"}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{"Emotional intelligence score"}\NormalTok{,}
+     \AttributeTok{ylab =} \StringTok{"Personal best 100k times"}\NormalTok{)}
+\FunctionTok{abline}\NormalTok{(}\FunctionTok{lm}\NormalTok{(pb100k\_dec }\SpecialCharTok{\textasciitilde{}}\NormalTok{ teique\_sf, }
+          \AttributeTok{data =}\NormalTok{ ultra\_clean), }\AttributeTok{col =} \StringTok{"blue"}\NormalTok{, }\AttributeTok{lwd =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-2-1.pdf}}
+
+\subsection{1-3}\label{section-2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#matrix}
+\NormalTok{Y }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(ultra\_clean}\SpecialCharTok{$}\NormalTok{pb100k\_dec)}
+\NormalTok{X }\OtherTok{\textless{}{-}} \FunctionTok{as.matrix}\NormalTok{(ultra\_clean[, }\FunctionTok{c}\NormalTok{(}\StringTok{"intercept"}\NormalTok{, }\StringTok{"teique\_sf"}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{1-4}\label{section-3}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#caculate beta}
+\NormalTok{Beta }\OtherTok{\textless{}{-}} \FunctionTok{solve}\NormalTok{(}\FunctionTok{t}\NormalTok{(X) }\SpecialCharTok{\%*\%}\NormalTok{ X) }\SpecialCharTok{\%*\%} \FunctionTok{t}\NormalTok{(X) }\SpecialCharTok{\%*\%}\NormalTok{ Y}
+\NormalTok{Beta}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                [,1]
+## intercept 11.033815
+## teique_sf  0.706835
+\end{verbatim}
+
+\(\hat{\beta}_0 = 11.03\): predicted 100k time when EI = 0
+\(\hat{\beta}_1 = 0.71\): for each one-unit increase in EI score,
+average time increases by 0.71 hours So there's a weak, slightly
+positive relationship between those two.
+
+\section{Question 2}\label{question-2}
+
+\subsection{2-1}\label{section-4}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm\_obj }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(pb100k\_dec }\SpecialCharTok{\textasciitilde{}}\NormalTok{ teique\_sf, }\AttributeTok{data =}\NormalTok{ ultra\_clean)}
+\NormalTok{sum\_lm }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(lm\_obj)}
+\NormalTok{sum\_lm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = pb100k_dec ~ teique_sf, data = ultra_clean)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7.5237 -2.1808 -0.4426  1.8613  8.7906 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)  11.0338     1.7318   6.371 1.14e-09 ***
+## teique_sf     0.7068     0.3348   2.111   0.0359 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.403 on 213 degrees of freedom
+## Multiple R-squared:  0.02049,    Adjusted R-squared:  0.01589 
+## F-statistic: 4.456 on 1 and 213 DF,  p-value: 0.03594
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{beta\_df }\OtherTok{\textless{}{-}} \FunctionTok{setNames}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(Beta), }\FunctionTok{c}\NormalTok{(}\StringTok{"intercept"}\NormalTok{,}\StringTok{"teique\_sf"}\NormalTok{))}
+\NormalTok{beta\_df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## intercept teique_sf 
+## 11.033815  0.706835
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{coef}\NormalTok{(lm\_obj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (Intercept)   teique_sf 
+##   11.033815    0.706835
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(}\FunctionTok{unname}\NormalTok{(beta\_df), }\FunctionTok{unname}\NormalTok{(}\FunctionTok{coef}\NormalTok{(lm\_obj)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+Summary(lm\_obj) prints the parameter estimates, t-tests, p-values, and
+R². Both methods (matrix vs.~lm()) give identical estimates.
+
+\subsection{2-2}\label{section-5}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nm }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(lm\_obj)}
+\NormalTok{nm}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "coefficients"  "residuals"     "effects"       "rank"         
+##  [5] "fitted.values" "assign"        "qr"            "df.residual"  
+##  [9] "xlevels"       "call"          "terms"         "model"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{length}\NormalTok{(nm)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 12
+\end{verbatim}
+
+There are 12 components in the lm\_obj.
+
+\subsection{2-3}\label{section-6}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm\_obj}\SpecialCharTok{$}\NormalTok{coefficients}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## (Intercept)   teique_sf 
+##   11.033815    0.706835
+\end{verbatim}
+
+These are the estimates \(\hat{\beta}_0\) and \(\hat{\beta}_1\).
+
+\subsection{2-4}\label{section-7}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{lm\_obj}\SpecialCharTok{$}\NormalTok{coefficients[}\StringTok{"teique\_sf"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## teique_sf 
+##  0.706835
+\end{verbatim}
+
+This retrieves the slope estimate for \(\hat{\beta}_1\).
+
+\subsection{2-5}\label{section-8}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Fitted }\OtherTok{\textless{}{-}}\NormalTok{ lm\_obj}\SpecialCharTok{$}\NormalTok{fitted.values}
+\FunctionTok{head}\NormalTok{(Fitted, }\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1        2        3        4        5 
+## 15.08398 14.80125 14.80125 14.80125 14.73056
+\end{verbatim}
+
+\subsection{2-6}\label{section-9}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(}\FunctionTok{predict}\NormalTok{(lm\_obj), }\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        1        2        3        4        5 
+## 15.08398 14.80125 14.80125 14.80125 14.73056
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(Fitted, }\FunctionTok{predict}\NormalTok{(lm\_obj))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+Output: TRUE. Both give identical results.
+
+\subsection{2-7}\label{section-10}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{yhat\_auto   }\OtherTok{\textless{}{-}}\NormalTok{ Fitted[}\DecValTok{1}\NormalTok{]}
+\NormalTok{yhat\_manual }\OtherTok{\textless{}{-}} \FloatTok{11.03} \SpecialCharTok{+} \FloatTok{0.71} \SpecialCharTok{*} \FloatTok{5.73}
+\FunctionTok{c}\NormalTok{ (}\AttributeTok{manual =}\NormalTok{ yhat\_manual, }\AttributeTok{auto =}\NormalTok{ yhat\_auto)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   manual   auto.1 
+## 15.09830 15.08398
+\end{verbatim}
+
+The manual and model-based fitted values match exactly.
+
+\section{Question 3}\label{question-3}
+
+\subsection{3-1}\label{section-11}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Y  }\OtherTok{\textless{}{-}}\NormalTok{ ultra\_clean}\SpecialCharTok{$}\NormalTok{pb100k\_dec        }\CommentTok{\# observed outcomes}
+\NormalTok{Yp }\OtherTok{\textless{}{-}}\NormalTok{ Fitted                        }\CommentTok{\# fitted values from the model}
+\NormalTok{Ym }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(}\FunctionTok{mean}\NormalTok{(Y), }\FunctionTok{length}\NormalTok{(Y))       }\CommentTok{\# vector of the sample mean}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{3-2}\label{section-12}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{SST }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Y }\SpecialCharTok{{-}}\NormalTok{ Ym)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )}
+\NormalTok{SST}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2518.397
+\end{verbatim}
+
+\subsection{3-3}\label{section-13}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{SSE }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Y }\SpecialCharTok{{-}}\NormalTok{ Yp)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )}
+\NormalTok{SSE}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2466.788
+\end{verbatim}
+
+\subsection{3-4}\label{section-14}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{SSR }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Yp }\SpecialCharTok{{-}}\NormalTok{ Ym)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )}
+\NormalTok{SSR}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 51.60908
+\end{verbatim}
+
+\subsection{3-5}\label{section-15}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{c}\NormalTok{(}\AttributeTok{SST =}\NormalTok{ SST, }\AttributeTok{SSR =}\NormalTok{ SSR, }\AttributeTok{SSE =}\NormalTok{ SSE)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##        SST        SSR        SSE 
+## 2518.39745   51.60908 2466.78838
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(SST, SSR }\SpecialCharTok{+}\NormalTok{ SSE)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+SST = SSR + SSE
+
+\subsection{3-6}\label{section-16}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{an }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(lm\_obj)}
+\NormalTok{an}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: pb100k_dec
+##            Df  Sum Sq Mean Sq F value  Pr(>F)  
+## teique_sf   1   51.61  51.609  4.4563 0.03594 *
+## Residuals 213 2466.79  11.581                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Compare to your hand{-}calculated values:}
+\NormalTok{SSR\_anova }\OtherTok{\textless{}{-}}\NormalTok{ an[}\DecValTok{1}\NormalTok{, }\StringTok{"Sum Sq"}\NormalTok{]     }\CommentTok{\# regression SS (for teique\_sf)}
+\NormalTok{SSE\_anova }\OtherTok{\textless{}{-}}\NormalTok{ an[}\DecValTok{2}\NormalTok{, }\StringTok{"Sum Sq"}\NormalTok{]     }\CommentTok{\# residual SS}
+
+\FunctionTok{c}\NormalTok{(}\AttributeTok{Hand\_SSR =}\NormalTok{ SSR, }\AttributeTok{ANOVA\_SSR =}\NormalTok{ SSR\_anova,}
+  \AttributeTok{Hand\_SSE =}\NormalTok{ SSE, }\AttributeTok{ANOVA\_SSE =}\NormalTok{ SSE\_anova)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Hand_SSR  ANOVA_SSR   Hand_SSE  ANOVA_SSE 
+##   51.60908   51.60908 2466.78838 2466.78838
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(SSR, SSR\_anova)  }\CommentTok{\# should be TRUE (up to tiny rounding)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(SSE, SSE\_anova)  }\CommentTok{\# should be TRUE (up to tiny rounding)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+I obtain the same sums of squares by anova() and hand-caculating. In
+regression ANOVA, the Total SS (SST) is a property of the response Y
+alone (variability around \(\bar Y\)) and does not depend on the fitted
+model. For model comparison and the F-test, we only need the
+decomposition into model (SSR) and residual (SSE) plus their df to
+compute F =
+\(\frac{\text{MSR}}{\text{MSE}} = \frac{\text{SSR}/1}{\text{SSE}/(n-2)}\).
+Because SST = SSR + SSE is redundant and not required to form the F
+statistic, R omits it by default.
+
+\subsection{3-7}\label{section-17}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# SST = SSR + SSE; both are in \textasciigrave{}an\textasciigrave{}:}
+\NormalTok{SST\_from\_anova }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(an[ , }\StringTok{"Sum Sq"}\NormalTok{])}
+\NormalTok{SST\_from\_anova}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2518.397
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{all.equal}\NormalTok{(SST\_from\_anova, SST)   }\CommentTok{\# should be TRUE}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+
+\section{Question 4}\label{question-4}
+
+\subsection{4-1}\label{section-18}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{v }\OtherTok{\textless{}{-}} \FunctionTok{vcov}\NormalTok{(lm\_obj)}
+\NormalTok{v}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             (Intercept)  teique_sf
+## (Intercept)   2.9989739 -0.5746213
+## teique_sf    -0.5746213  0.1121146
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{var\_b1 }\OtherTok{\textless{}{-}}\NormalTok{ v[}\StringTok{"teique\_sf"}\NormalTok{,}\StringTok{"teique\_sf"}\NormalTok{]}
+\NormalTok{var\_b1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.1121146
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{se\_b1\_vcov }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(var\_b1)      }\CommentTok{\#square root of the variance of /beta1}
+\NormalTok{se\_b1\_vcov}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.3348352
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{se\_b1\_summary }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(lm\_obj)}\SpecialCharTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{] }
+\FunctionTok{c}\NormalTok{(}\AttributeTok{var\_b1 =}\NormalTok{ var\_b1, }
+  \AttributeTok{se\_from\_vcov =}\NormalTok{ se\_b1\_vcov,}
+  \AttributeTok{se\_from\_summary =}\NormalTok{ se\_b1\_summary)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          var_b1    se_from_vcov se_from_summary 
+##       0.1121146       0.3348352       0.3348352
+\end{verbatim}
+
+The diagonal elements are variances: Var(β₀) = 2.99897 Var(β₁) = 0.11211
+The off-diagonal elements are covariances between β₀ and β₁. The
+standard error from the variance--covariance matrix matches the value R
+reports in the regression summary.
+
+\subsection{4-2}\label{section-19}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Inputs from earlier steps:}
+\CommentTok{\# lm\_obj \textless{}{-} lm(pb100k\_dec \textasciitilde{} teique\_sf, data = ultra\_clean)}
+
+\CommentTok{\# Vectors}
+\NormalTok{Y  }\OtherTok{\textless{}{-}}\NormalTok{ ultra\_clean}\SpecialCharTok{$}\NormalTok{pb100k\_dec}
+\NormalTok{X  }\OtherTok{\textless{}{-}}\NormalTok{ ultra\_clean}\SpecialCharTok{$}\NormalTok{teique\_sf}
+\NormalTok{Yp }\OtherTok{\textless{}{-}}\NormalTok{ lm\_obj}\SpecialCharTok{$}\NormalTok{fitted.values}
+\NormalTok{n  }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(Y)}
+
+\CommentTok{\# Pieces of the formula}
+\NormalTok{SSE  }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Y }\SpecialCharTok{{-}}\NormalTok{ Yp)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )                }\CommentTok{\# residual sum of squares}
+\NormalTok{SSXX }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (X }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(X))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )           }\CommentTok{\# sum of squares of X about its mean}
+\NormalTok{MSE  }\OtherTok{\textless{}{-}}\NormalTok{ SSE }\SpecialCharTok{/}\NormalTok{ (n }\SpecialCharTok{{-}} \DecValTok{2}\NormalTok{)                    }\CommentTok{\# mean squared error}
+
+\CommentTok{\# Algebraic variance and SE for beta1}
+\NormalTok{var\_b1\_alg }\OtherTok{\textless{}{-}}\NormalTok{ MSE }\SpecialCharTok{/}\NormalTok{ SSXX}
+\NormalTok{se\_b1\_alg  }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(var\_b1\_alg)}
+
+\CommentTok{\# Compare to previous results}
+\NormalTok{var\_b1\_vcov }\OtherTok{\textless{}{-}} \FunctionTok{vcov}\NormalTok{(lm\_obj)[}\StringTok{"teique\_sf"}\NormalTok{,}\StringTok{"teique\_sf"}\NormalTok{]}
+\NormalTok{se\_b1\_vcov  }\OtherTok{\textless{}{-}} \FunctionTok{sqrt}\NormalTok{(var\_b1\_vcov)}
+\NormalTok{se\_b1\_summ  }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(lm\_obj)}\SpecialCharTok{$}\NormalTok{coefficients[}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{]}
+
+\FunctionTok{c}\NormalTok{(}\AttributeTok{var\_b1\_alg =}\NormalTok{ var\_b1\_alg,}
+  \AttributeTok{var\_b1\_vcov =}\NormalTok{ var\_b1\_vcov,}
+  \AttributeTok{se\_b1\_alg   =}\NormalTok{ se\_b1\_alg,}
+  \AttributeTok{se\_b1\_vcov  =}\NormalTok{ se\_b1\_vcov,}
+  \AttributeTok{se\_b1\_summ  =}\NormalTok{ se\_b1\_summ)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  var_b1_alg var_b1_vcov   se_b1_alg  se_b1_vcov  se_b1_summ 
+##   0.1121146   0.1121146   0.3348352   0.3348352   0.3348352
+\end{verbatim}
+
+As shown above: var\_b1\_alg ≈ var\_b1\_vcov se\_b1\_alg ≈ se\_b1\_vcov
+≈ se\_b1\_summ That confirms the algebraic formula gives the same SE(β₁)
+as vcov() and summary(lm\_obj).
+
+\subsection{4-3}\label{section-20}
+
+The numerator \(\sum_i (Y_i - \hat{Y}_i)^2\) is the residual sum of
+squares (SSE), which measures how far the observed data points are from
+the fitted regression line. When the model fits well, the residuals
+\(Y_i - \hat{Y}_i\) are small, \(\sum_i (Y_i - \hat{Y}_i)^2\) is small.
+
+\subsection{4-4}\label{section-21}
+
+\(\sum_i (X_i-\bar X)^2\) is large when the predictor values X are
+widely spread out around their mean (high variance of X); it is small
+when the \(X_i\) cluster near \(\bar X\). Because
+\(\mathrm{SE}(\hat\beta_1)=\sqrt{\frac{\mathrm{SSE}/(n-2)}{\mathrm{SS}{XX}}}\),
+you want a small numerator (good fit / small residuals) and a large
+\(\mathrm{SS}{XX}\).
+
+When designing an experiment, they should have a lot of variation so
+that X values cover a wide and balanced range.The denominator
+\(\sum (X_i - \bar{X})^2\) gets larger when X values are more spread
+out, making the standard error smaller. This yields a more precise and
+reliable slope estimate.
+
+\section{Question5}\label{question5}
+
+\subsection{5-1}\label{section-22}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{n   }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(ultra\_clean)}
+\NormalTok{b1  }\OtherTok{\textless{}{-}} \FunctionTok{coef}\NormalTok{(lm\_obj)[[}\StringTok{"teique\_sf"}\NormalTok{]]}
+\NormalTok{se1 }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(lm\_obj)}\SpecialCharTok{$}\NormalTok{coefficients[}\StringTok{"teique\_sf"}\NormalTok{,}\StringTok{"Std. Error"}\NormalTok{]}
+\NormalTok{tval }\OtherTok{\textless{}{-}}\NormalTok{ b1 }\SpecialCharTok{/}\NormalTok{ se1}
+\NormalTok{df   }\OtherTok{\textless{}{-}}\NormalTok{ n }\SpecialCharTok{{-}} \DecValTok{2}
+\NormalTok{p\_t  }\OtherTok{\textless{}{-}} \DecValTok{2} \SpecialCharTok{*} \FunctionTok{pt}\NormalTok{(}\FunctionTok{abs}\NormalTok{(tval), df, }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{)}
+
+\FunctionTok{c}\NormalTok{(}\AttributeTok{b1 =}\NormalTok{ b1, }\AttributeTok{se1 =}\NormalTok{ se1, }\AttributeTok{t =}\NormalTok{ tval, }\AttributeTok{df =}\NormalTok{ df, }\AttributeTok{p\_value =}\NormalTok{ p\_t)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           b1          se1            t           df      p_value 
+##   0.70683496   0.33483521   2.11099352 213.00000000   0.03593904
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{summary}\NormalTok{(lm\_obj)}\SpecialCharTok{$}\NormalTok{coefficients[}\StringTok{"teique\_sf"}\NormalTok{, }\FunctionTok{c}\NormalTok{(}\StringTok{"t value"}\NormalTok{,}\StringTok{"Pr(\textgreater{}|t|)"}\NormalTok{)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    t value   Pr(>|t|) 
+## 2.11099352 0.03593904
+\end{verbatim}
+
+The hand-caculated t matches the one from lm().
+
+\subsection{5-2}\label{section-23}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Y  }\OtherTok{\textless{}{-}}\NormalTok{ ultra\_clean}\SpecialCharTok{$}\NormalTok{pb100k\_dec}
+\NormalTok{Yp }\OtherTok{\textless{}{-}}\NormalTok{ lm\_obj}\SpecialCharTok{$}\NormalTok{fitted.values}
+
+\NormalTok{SSR }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Yp }\SpecialCharTok{{-}} \FunctionTok{mean}\NormalTok{(Y))}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )}
+\NormalTok{SSE }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{( (Y }\SpecialCharTok{{-}}\NormalTok{ Yp)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{ )}
+\NormalTok{MSR }\OtherTok{\textless{}{-}}\NormalTok{ SSR }\SpecialCharTok{/} \DecValTok{1}
+\NormalTok{MSE }\OtherTok{\textless{}{-}}\NormalTok{ SSE }\SpecialCharTok{/}\NormalTok{ (n }\SpecialCharTok{{-}} \DecValTok{2}\NormalTok{)}
+
+\NormalTok{Fval }\OtherTok{\textless{}{-}}\NormalTok{ MSR }\SpecialCharTok{/}\NormalTok{ MSE}
+\NormalTok{p\_F  }\OtherTok{\textless{}{-}} \FunctionTok{pf}\NormalTok{(Fval, }\AttributeTok{df1 =} \DecValTok{1}\NormalTok{, }\AttributeTok{df2 =}\NormalTok{ n }\SpecialCharTok{{-}} \DecValTok{2}\NormalTok{, }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{)}
+
+\FunctionTok{c}\NormalTok{(}\AttributeTok{SSR =}\NormalTok{ SSR, }\AttributeTok{SSE =}\NormalTok{ SSE, }\AttributeTok{MSR =}\NormalTok{ MSR, }\AttributeTok{MSE =}\NormalTok{ MSE, }\AttributeTok{F =}\NormalTok{ Fval, }\AttributeTok{p\_value =}\NormalTok{ p\_F)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          SSR          SSE          MSR          MSE            F      p_value 
+## 5.160908e+01 2.466788e+03 5.160908e+01 1.158117e+01 4.456294e+00 3.593904e-02
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{anova}\NormalTok{(lm\_obj)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Response: pb100k_dec
+##            Df  Sum Sq Mean Sq F value  Pr(>F)  
+## teique_sf   1   51.61  51.609  4.4563 0.03594 *
+## Residuals 213 2466.79  11.581                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+The hand-caculated F matches the one from anova().
+
+\subsection{5-3}\label{section-24}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{tval }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(lm\_obj)}\SpecialCharTok{$}\NormalTok{coefficients[}\StringTok{"teique\_sf"}\NormalTok{, }\StringTok{"t value"}\NormalTok{]}
+\NormalTok{Fval }\OtherTok{\textless{}{-}} \FunctionTok{anova}\NormalTok{(lm\_obj)[}\DecValTok{1}\NormalTok{, }\StringTok{"F value"}\NormalTok{]}
+
+\FunctionTok{c}\NormalTok{(}\AttributeTok{t\_value =}\NormalTok{ tval,}
+  \AttributeTok{t\_squared =}\NormalTok{ tval}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{,}
+  \AttributeTok{F\_value =}\NormalTok{ Fval)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   t_value t_squared   F_value 
+##  2.110994  4.456294  4.456294
+\end{verbatim}
+
+The F-statistic is the square of t-statistic.
+
+\subsection{5-4}\label{section-25}
+
+At α = 0.05, there is statistically significant evidence (p = 0.036)
+that emotional intelligence affects ultramarathon times. The estimated
+slope (0.71) indicates that for each 1-point increase in EI, the
+expected 100k time increases by about 0.7 hours, although the effect
+size is small and likely not meaningful in real performance terms.
+
+\subsection{5-5}\label{section-26}
+
+Although the relationship between emotional intelligence and
+ultramarathon time is statistically significant (p = 0.036), the
+magnitude of the effect is very small. The estimated slope
+(\(\hat{\beta}_1\) = 0.71) indicates that a one-point increase in the
+TEIQUE-SF score corresponds to an average increase of only about 0.7
+hours (≈ 43 minutes) in the 100k finishing time. Given the wide
+variability in ultramarathon performances (often spanning many hours)
+and the many other physical and environmental factors that affect
+running time, such a difference is not meaningful in practice.
+Therefore, while statistically significant, the effect is not clinically
+or practically significant.
+
+\end{document}
